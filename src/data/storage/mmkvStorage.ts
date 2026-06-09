@@ -1,5 +1,9 @@
 import { createMMKV } from 'react-native-mmkv';
 
+import { createLogger } from '../../shared/lib/logger';
+
+const logger = createLogger('MMKVStorage');
+
 export type JsonStorageAdapter = {
   getJson: (key: string) => unknown | null;
   setJson: (key: string, value: unknown) => void;
@@ -19,7 +23,11 @@ type NativeStorage = ReturnType<typeof createMMKV>;
 let nativeStorage: NativeStorage | null = null;
 
 function getNativeStorage(): NativeStorage {
-  nativeStorage ??= createMMKV({ id: 'posts-app-storage' });
+  if (nativeStorage == null) {
+    nativeStorage = createMMKV({ id: 'posts-app-storage' });
+    logger.info('native-storage:created', { id: 'posts-app-storage' });
+  }
+
   return nativeStorage;
 }
 
@@ -28,25 +36,39 @@ export const mmkvStorage: JsonStorageAdapter = {
     const rawValue = getNativeStorage().getString(key);
 
     if (rawValue == null) {
+      logger.info('json:get:miss', { key });
       return null;
     }
 
     try {
-      return JSON.parse(rawValue);
+      const parsedValue = JSON.parse(rawValue);
+
+      logger.info('json:get:hit', { key, size: rawValue.length });
+
+      return parsedValue;
     } catch {
+      logger.warn('json:get:parse-error', { key });
       throw new StorageParseError(key);
     }
   },
 
   setJson(key: string, value: unknown): void {
-    getNativeStorage().set(key, JSON.stringify(value));
+    const rawValue = JSON.stringify(value);
+
+    getNativeStorage().set(key, rawValue);
+    logger.info('json:set', { key, size: rawValue.length });
   },
 
   remove(key: string): void {
     getNativeStorage().remove(key);
+    logger.info('key:remove', { key });
   },
 
   contains(key: string): boolean {
-    return getNativeStorage().contains(key);
+    const hasKey = getNativeStorage().contains(key);
+
+    logger.info('key:contains', { hasKey, key });
+
+    return hasKey;
   },
 };

@@ -8,6 +8,9 @@ import { postDetailsKey } from '../data/storage/storageKeys';
 import { createPostDetails } from '../entities/post/factories';
 import { isPostDetails } from '../entities/post/guards';
 import type { PostDetails } from '../entities/post/types';
+import { createLogger } from '../shared/lib/logger';
+
+const logger = createLogger('DetailsRepository');
 
 export type DetailsRepositoryDependencies = {
   apiClient?: Pick<PostsApiClient, 'fetchPostDetails'>;
@@ -29,19 +32,24 @@ export class DetailsRepository {
 
   async getPostDetails(id: number): Promise<PostDetails> {
     assertPostId(id);
+    logger.info('getPostDetails:start', { id });
 
     const storageKey = postDetailsKey(id);
     const cachedDetails = this.readCachedDetails(storageKey);
 
     if (cachedDetails != null) {
+      logger.info('getPostDetails:cache-hit', { id });
       return cachedDetails;
     }
 
     const pendingRequest = this.pendingDetailsRequests.get(id);
 
     if (pendingRequest != null) {
+      logger.info('getPostDetails:reuse-in-flight-request', { id });
       return pendingRequest;
     }
+
+    logger.info('getPostDetails:cache-miss-fetch-start', { id });
 
     const request = this.fetchAndCachePostDetails(id, storageKey);
     this.pendingDetailsRequests.set(id, request);
@@ -51,6 +59,7 @@ export class DetailsRepository {
     } finally {
       if (this.pendingDetailsRequests.get(id) === request) {
         this.pendingDetailsRequests.delete(id);
+        logger.info('getPostDetails:in-flight-cleared', { id });
       }
     }
   }
@@ -63,6 +72,7 @@ export class DetailsRepository {
       const enrichedDetails = createPostDetails(apiPost);
 
       this.storage.setJson(storageKey, enrichedDetails);
+      logger.info('getPostDetails:fetched-enriched-cached', { id });
 
       return enrichedDetails;
     });
@@ -76,6 +86,7 @@ export class DetailsRepository {
     } catch (error) {
       if (error instanceof StorageParseError) {
         this.storage.remove(storageKey);
+        logger.warn('cache:parse-error-recovered', { key: storageKey });
         return null;
       }
 
@@ -83,11 +94,13 @@ export class DetailsRepository {
     }
 
     if (cachedDetails == null) {
+      logger.info('cache:empty', { key: storageKey });
       return null;
     }
 
     if (!isPostDetails(cachedDetails)) {
       this.storage.remove(storageKey);
+      logger.warn('cache:invalid-shape-recovered', { key: storageKey });
       return null;
     }
 
@@ -97,6 +110,7 @@ export class DetailsRepository {
   clearCache(id: number): void {
     assertPostId(id);
     this.storage.remove(postDetailsKey(id));
+    logger.info('cache:clear', { id });
   }
 }
 

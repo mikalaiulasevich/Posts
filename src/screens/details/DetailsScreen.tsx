@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 
 import type { RootStackParamList } from '../../navigation/types';
+import { createLogger } from '../../shared/lib/logger';
 import { ErrorState } from '../../shared/ui/ErrorState';
 import { LoadingState } from '../../shared/ui/LoadingState';
 import {
@@ -21,6 +22,8 @@ import {
 import { usePostsStore } from '../../store/postsStore';
 
 type DetailsScreenProps = NativeStackScreenProps<RootStackParamList, 'Details'>;
+
+const logger = createLogger('DetailsScreen');
 
 export function DetailsScreen({
   route,
@@ -36,6 +39,7 @@ export function DetailsScreen({
 
   const requestDetails = useCallback(() => {
     setHasRequestedDetails(true);
+    logger.info('requestDetails', { id: postId });
     void loadPostDetails(postId);
   }, [loadPostDetails, postId]);
 
@@ -44,6 +48,7 @@ export function DetailsScreen({
   }, [requestDetails]);
 
   const handleToggleFavorite = useCallback(() => {
+    logger.info('toggleFavorite:press', { id: postId });
     toggleFavorite(postId);
   }, [postId, toggleFavorite]);
 

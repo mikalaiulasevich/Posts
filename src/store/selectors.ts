@@ -1,6 +1,9 @@
 import type { PostDetails, PostListItem } from '../entities/post/types';
+import { createLogger } from '../shared/lib/logger';
 
 import type { PostsState } from './postsStore';
+
+const logger = createLogger('PostSelectors');
 
 export const selectPosts = (state: PostsState): PostListItem[] => state.posts;
 
@@ -17,6 +20,11 @@ export function sortPostsWithFavorites(
   posts: PostListItem[],
   favoriteIds: number[],
 ): PostListItem[] {
+  logger.info('sortPostsWithFavorites:run', {
+    favoriteCount: favoriteIds.length,
+    postCount: posts.length,
+  });
+
   const favoriteIdSet = new Set(favoriteIds);
 
   return posts

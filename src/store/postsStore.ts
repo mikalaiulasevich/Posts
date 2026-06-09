@@ -12,7 +12,10 @@ import {
   postsRepository,
   type PostsRepository,
 } from '../repositories/PostsRepository';
+import { createLogger } from '../shared/lib/logger';
 import type { PostDetails, PostListItem } from '../entities/post/types';
+
+const logger = createLogger('PostsStore');
 
 export type PostsStoreDependencies = {
   postsRepository?: PostsRepository;
@@ -37,23 +40,29 @@ export function createPostsStore(dependencies: PostsStoreDependencies = {}) {
   const postsRepo = dependencies.postsRepository ?? postsRepository;
   const detailsRepo = dependencies.detailsRepository ?? detailsRepository;
   const favoritesRepo = dependencies.favoritesRepository ?? favoritesRepository;
+  const initialFavoriteIds = favoritesRepo.getFavoriteIds();
+
+  logger.info('store:init', { favoriteCount: initialFavoriteIds.length });
 
   return create<PostsState>((set, get) => ({
     posts: [],
     detailsById: {},
-    favoriteIds: favoritesRepo.getFavoriteIds(),
+    favoriteIds: initialFavoriteIds,
     isPostsLoading: false,
     detailsLoadingById: {},
     postsError: null,
     detailsErrorById: {},
 
     async loadPosts(): Promise<void> {
+      logger.info('loadPosts:start');
       set({ isPostsLoading: true, postsError: null });
 
       try {
         const posts = await postsRepo.getPosts();
         set({ posts, isPostsLoading: false, postsError: null });
+        logger.info('loadPosts:success', { count: posts.length });
       } catch (error) {
+        logger.error('loadPosts:error', { message: getErrorMessage(error) });
         set({
           isPostsLoading: false,
           postsError: getErrorMessage(error),
@@ -65,8 +74,11 @@ export function createPostsStore(dependencies: PostsStoreDependencies = {}) {
       const cachedDetails = get().detailsById[id];
 
       if (cachedDetails != null) {
+        logger.info('loadPostDetails:memory-cache-hit', { id });
         return;
       }
+
+      logger.info('loadPostDetails:start', { id });
 
       set(state => ({
         detailsLoadingById: {
@@ -96,7 +108,12 @@ export function createPostsStore(dependencies: PostsStoreDependencies = {}) {
             [id]: null,
           },
         }));
+        logger.info('loadPostDetails:success', { id });
       } catch (error) {
+        logger.error('loadPostDetails:error', {
+          id,
+          message: getErrorMessage(error),
+        });
         set(state => ({
           detailsLoadingById: {
             ...state.detailsLoadingById,
@@ -120,6 +137,11 @@ export function createPostsStore(dependencies: PostsStoreDependencies = {}) {
           : [...state.favoriteIds, id];
 
         favoritesRepo.setFavoriteIds(favoriteIds);
+        logger.info('toggleFavorite:success', {
+          favoriteCount: favoriteIds.length,
+          id,
+          nextIsFavorite: !isFavorite,
+        });
 
         return { favoriteIds };
       });

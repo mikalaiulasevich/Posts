@@ -7,6 +7,7 @@ import type { RootStackParamList } from '../../navigation/types';
 import { EmptyState } from '../../shared/ui/EmptyState';
 import { ErrorState } from '../../shared/ui/ErrorState';
 import { LoadingState } from '../../shared/ui/LoadingState';
+import { createLogger } from '../../shared/lib/logger';
 import {
   selectFavoriteIds,
   selectIsPostsLoading,
@@ -17,6 +18,8 @@ import {
 import { usePostsStore } from '../../store/postsStore';
 
 import { PostListItem } from './components/PostListItem';
+
+const logger = createLogger('PostsScreen');
 
 type PostsScreenProps = NativeStackScreenProps<RootStackParamList, 'Posts'>;
 
@@ -36,6 +39,7 @@ export function PostsScreen({
 
   const requestPosts = useCallback(() => {
     setHasRequestedPosts(true);
+    logger.info('requestPosts');
     void loadPosts();
   }, [loadPosts]);
 
@@ -48,7 +52,10 @@ export function PostsScreen({
       <PostListItem
         post={item}
         isFavorite={favoriteIds.includes(item.id)}
-        onPress={() => navigation.navigate('Details', { postId: item.id })}
+        onPress={() => {
+          logger.info('navigate:details', { id: item.id });
+          navigation.navigate('Details', { postId: item.id });
+        }}
       />
     ),
     [favoriteIds, navigation],

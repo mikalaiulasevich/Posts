@@ -4,6 +4,9 @@ import {
   StorageParseError,
 } from '../data/storage/mmkvStorage';
 import { STORAGE_KEYS } from '../data/storage/storageKeys';
+import { createLogger } from '../shared/lib/logger';
+
+const logger = createLogger('FavoritesRepository');
 
 export type FavoritesRepositoryDependencies = {
   storage?: JsonStorageAdapter;
@@ -21,11 +24,13 @@ export class FavoritesRepository {
       const favoriteIds = this.storage.getJson(STORAGE_KEYS.favorites);
 
       if (favoriteIds == null) {
+        logger.info('favorites:get:empty');
         return [];
       }
 
       if (!Array.isArray(favoriteIds)) {
         this.storage.remove(STORAGE_KEYS.favorites);
+        logger.warn('favorites:get:invalid-shape-recovered');
         return [];
       }
 
@@ -33,12 +38,20 @@ export class FavoritesRepository {
 
       if (normalizedFavoriteIds.length !== favoriteIds.length) {
         this.storage.setJson(STORAGE_KEYS.favorites, normalizedFavoriteIds);
+        logger.info('favorites:get:normalized', {
+          count: normalizedFavoriteIds.length,
+        });
       }
+
+      logger.info('favorites:get:restored', {
+        count: normalizedFavoriteIds.length,
+      });
 
       return normalizedFavoriteIds;
     } catch (error) {
       if (error instanceof StorageParseError) {
         this.storage.remove(STORAGE_KEYS.favorites);
+        logger.warn('favorites:get:parse-error-recovered');
         return [];
       }
 
@@ -47,14 +60,15 @@ export class FavoritesRepository {
   }
 
   setFavoriteIds(favoriteIds: number[]): void {
-    this.storage.setJson(
-      STORAGE_KEYS.favorites,
-      normalizeFavoriteIds(favoriteIds),
-    );
+    const normalizedFavoriteIds = normalizeFavoriteIds(favoriteIds);
+
+    this.storage.setJson(STORAGE_KEYS.favorites, normalizedFavoriteIds);
+    logger.info('favorites:set', { count: normalizedFavoriteIds.length });
   }
 
   clear(): void {
     this.storage.remove(STORAGE_KEYS.favorites);
+    logger.info('favorites:clear');
   }
 }
 

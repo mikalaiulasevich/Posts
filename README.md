@@ -12,6 +12,12 @@
 - FakerJS
 - Fetch API
 
+## Требования окружения
+
+- Node.js `>=22.11.0`
+- Настроенное React Native CLI окружение для Android и/или iOS
+- Для iOS: CocoaPods/Bundler окружение
+
 ## Что реализовано
 
 - `PostsScreen` загружает список постов из `https://jsonplaceholder.typicode.com/posts`.
@@ -23,6 +29,7 @@
 - Enriched список, детали и `favoriteIds` сохраняются в MMKV.
 - При наличии cache повторный API-запрос не выполняется.
 - FakerJS-картинки генерируются только на первом enrichment и затем читаются из cache.
+- В ключевых слоях добавлены безопасные diagnostic logs с префиксом `PostsApp`.
 
 ## Архитектура
 
@@ -49,6 +56,18 @@ src/
 ```
 
 UI не содержит сетевой логики, прямой работы с MMKV или вызовов FakerJS.
+
+## Persistence, cache и логи
+
+- `PostsRepository` и `DetailsRepository` реализуют cache-first flow.
+- При cache hit API и FakerJS enrichment не вызываются.
+- При первом parallel cache miss используется in-flight dedupe, чтобы не запускать повторный API/FakerJS flow.
+- При повреждённом MMKV JSON cache ключ удаляется и выполняется controlled refetch.
+- Логи помогают проверить:
+  - `request:start` / `request:success` — фактические network вызовы;
+  - `cache-hit` / `cache-miss-fetch-start` — cache behavior;
+  - `list-image:generate` / `details-image:generate` — моменты генерации FakerJS;
+  - `favorites:set` / `favorites:get:restored` — persistence избранного.
 
 ## Установка
 
@@ -113,3 +132,22 @@ npx react-native bundle \
 ## AI-only материалы
 
 Документация по анализу требований, архитектуре, плану реализации и acceptance checklist находится в `ai_documentation/`.
+
+Ключевые файлы:
+
+- `ai_documentation/00_task_analysis.md`
+- `ai_documentation/01_architecture_plan.md`
+- `ai_documentation/03_implementation_plan.md`
+- `ai_documentation/05_ai_prompts.md`
+- `ai_documentation/06_decisions.md`
+- `ai_documentation/09_final_acceptance_checklist.md`
+
+Перед публикацией AI-доказательств нужно удалить секреты, приватные URL, персональные данные и лишние локальные пути из выгрузок чатов/скриншотов.
+
+## Ограничения
+
+- Нет pagination: задание требует простой список.
+- Нет pull-to-refresh: данные должны запрашиваться один раз и затем читаться из cache.
+- Нет server sync избранного: `favoriteIds` сохраняются локально в MMKV.
+- Нет offline queue: вне объёма тестового задания.
+- Реальные Android/iOS запуски нужно подтвердить на локальном окружении проверяющего или автора перед финальной публикацией.
