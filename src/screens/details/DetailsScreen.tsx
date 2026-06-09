@@ -1,21 +1,13 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useCallback, useEffect, useState } from 'react';
-import {
-  Image,
-  type ImageErrorEvent,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import FastImage from 'react-native-fast-image';
 
 import type { RootStackParamList } from '../../navigation/types';
 import { createLogger } from '../../shared/lib/logger';
 import { ErrorState } from '../../shared/ui/ErrorState';
 import { LoadingState } from '../../shared/ui/LoadingState';
 import {
-  selectCacheVersion,
   selectIsFavorite,
   selectIsPostDetailsLoading,
   selectPostDetails,
@@ -32,7 +24,6 @@ export function DetailsScreen({
 }: DetailsScreenProps): React.JSX.Element {
   const { postId } = route.params;
   const details = usePostsStore(selectPostDetails(postId));
-  const cacheVersion = usePostsStore(selectCacheVersion);
   const isLoading = usePostsStore(selectIsPostDetailsLoading(postId));
   const error = usePostsStore(selectPostDetailsError(postId));
   const isFavorite = usePostsStore(selectIsFavorite(postId));
@@ -48,22 +39,12 @@ export function DetailsScreen({
 
   useEffect(() => {
     requestDetails();
-  }, [cacheVersion, requestDetails]);
+  }, [requestDetails]);
 
   const handleToggleFavorite = useCallback(() => {
     logger.info('toggleFavorite:press', { id: postId });
     toggleFavorite(postId);
   }, [postId, toggleFavorite]);
-
-  const handleImageError = useCallback(
-    (event: ImageErrorEvent) => {
-      logger.error('image:error', {
-        error: event.nativeEvent.error,
-        id: postId,
-      });
-    },
-    [postId],
-  );
 
   if ((isLoading || !hasRequestedDetails) && details == null) {
     return <LoadingState label="Loading post details..." />;
@@ -84,10 +65,15 @@ export function DetailsScreen({
 
   return (
     <ScrollView contentContainerStyle={styles.content} style={styles.container}>
-      <Image
-        onError={handleImageError}
+      <FastImage
+        onError={() => logger.error('image:error', { id: details.id })}
         onLoad={() => logger.info('image:loaded', { id: details.id })}
-        source={{ uri: details.imageUrl }}
+        resizeMode={FastImage.resizeMode.cover}
+        source={{
+          cache: FastImage.cacheControl.immutable,
+          priority: FastImage.priority.normal,
+          uri: details.imageUrl,
+        }}
         style={styles.image}
       />
       <View style={styles.card}>

@@ -9,7 +9,6 @@ import { ErrorState } from '../../shared/ui/ErrorState';
 import { LoadingState } from '../../shared/ui/LoadingState';
 import { createLogger } from '../../shared/lib/logger';
 import {
-  selectCacheVersion,
   selectFavoriteIds,
   selectIsPostsLoading,
   selectPosts,
@@ -29,7 +28,6 @@ export function PostsScreen({
 }: PostsScreenProps): React.JSX.Element {
   const posts = usePostsStore(selectPosts);
   const favoriteIds = usePostsStore(selectFavoriteIds);
-  const cacheVersion = usePostsStore(selectCacheVersion);
   const isLoading = usePostsStore(selectIsPostsLoading);
   const error = usePostsStore(selectPostsError);
   const loadPosts = usePostsStore(state => state.loadPosts);
@@ -47,7 +45,7 @@ export function PostsScreen({
 
   useEffect(() => {
     requestPosts();
-  }, [cacheVersion, requestPosts]);
+  }, [requestPosts]);
 
   const renderItem = useCallback(
     ({ item }: { item: PostListItemModel }) => (

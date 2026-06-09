@@ -32,7 +32,6 @@ export type PostsState = {
   posts: PostListItem[];
   detailsById: Record<number, PostDetails>;
   favoriteIds: number[];
-  cacheVersion: number;
   isPostsLoading: boolean;
   detailsLoadingById: Record<number, boolean>;
   postsError: string | null;
@@ -40,7 +39,7 @@ export type PostsState = {
   loadPosts: () => Promise<void>;
   loadPostDetails: (id: number) => Promise<void>;
   toggleFavorite: (id: number) => void;
-  clearCache: () => void;
+  clearCache: () => Promise<void>;
 };
 
 export function createPostsStore(dependencies: PostsStoreDependencies = {}) {
@@ -56,7 +55,6 @@ export function createPostsStore(dependencies: PostsStoreDependencies = {}) {
     posts: [],
     detailsById: {},
     favoriteIds: initialFavoriteIds,
-    cacheVersion: 0,
     isPostsLoading: false,
     detailsLoadingById: {},
     postsError: null,
@@ -156,20 +154,19 @@ export function createPostsStore(dependencies: PostsStoreDependencies = {}) {
       });
     },
 
-    clearCache(): void {
+    async clearCache(): Promise<void> {
       logger.warn('clearCache:start');
-      cacheRepo.clearAll();
+      await cacheRepo.clearAll();
 
-      set(state => ({
+      set({
         posts: [],
         detailsById: {},
         favoriteIds: [],
-        cacheVersion: state.cacheVersion + 1,
         isPostsLoading: false,
         detailsLoadingById: {},
         postsError: null,
         detailsErrorById: {},
-      }));
+      });
 
       logger.warn('clearCache:success');
     },

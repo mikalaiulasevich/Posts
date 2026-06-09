@@ -1,3 +1,5 @@
+import FastImage from 'react-native-fast-image';
+
 import {
   mmkvStorage,
   type JsonStorageAdapter,
@@ -17,8 +19,10 @@ export class CacheRepository {
     this.storage = dependencies.storage ?? mmkvStorage;
   }
 
-  clearAll(): void {
+  async clearAll(): Promise<void> {
     this.storage.clearAll();
+    await FastImage.clearMemoryCache();
+    await FastImage.clearDiskCache();
     logger.warn('clearAll:success');
   }
 }

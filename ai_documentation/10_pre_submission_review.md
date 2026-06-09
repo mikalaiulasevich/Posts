@@ -18,7 +18,8 @@
 - При наличии cache повторный API-запрос не выполняется.
 - При parallel first cache miss повторный API/FakerJS flow предотвращается in-flight dedupe.
 - URL картинок получают `cacheBust` query-параметр.
-- Header содержит кнопку `Clear cache` для полной очистки MMKV и перезагрузки данных.
+- Картинки рендерятся через `react-native-fast-image` с immutable cache.
+- Header содержит кнопку `Clear cache` для полной очистки MMKV/FastImage cache и закрытия приложения без повторного fetch.
 - Избранное сохраняется после перезапуска через MMKV.
 - Избранные посты визуально выделяются и поднимаются вверх списка.
 - Toggle favorite реализован на `DetailsScreen`.

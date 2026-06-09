@@ -1,12 +1,6 @@
 import React from 'react';
-import {
-  Image,
-  type ImageErrorEvent,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import FastImage from 'react-native-fast-image';
 
 import type { PostListItem as PostListItemModel } from '../../../entities/post/types';
 import { createLogger } from '../../../shared/lib/logger';
@@ -24,13 +18,6 @@ export function PostListItem({
   isFavorite,
   onPress,
 }: PostListItemProps): React.JSX.Element {
-  const handleImageError = (event: ImageErrorEvent): void => {
-    logger.error('thumbnail:error', {
-      error: event.nativeEvent.error,
-      id: post.id,
-    });
-  };
-
   return (
     <Pressable
       accessibilityRole="button"
@@ -41,10 +28,15 @@ export function PostListItem({
         pressed && styles.pressed,
       ]}
     >
-      <Image
-        onError={handleImageError}
+      <FastImage
+        onError={() => logger.error('thumbnail:error', { id: post.id })}
         onLoad={() => logger.info('thumbnail:loaded', { id: post.id })}
-        source={{ uri: post.thumbnailUrl }}
+        resizeMode={FastImage.resizeMode.cover}
+        source={{
+          cache: FastImage.cacheControl.immutable,
+          priority: FastImage.priority.normal,
+          uri: post.thumbnailUrl,
+        }}
         style={styles.thumbnail}
       />
       <View style={styles.content}>

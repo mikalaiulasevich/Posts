@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Pressable, StyleSheet, Text } from 'react-native';
+import { BackHandler, Pressable, StyleSheet, Text } from 'react-native';
 
 import { createLogger } from '../shared/lib/logger';
 import { usePostsStore } from '../store/postsStore';
@@ -11,7 +11,10 @@ export function ClearCacheButton(): React.JSX.Element {
 
   const handlePress = useCallback(() => {
     logger.warn('press');
-    clearCache();
+    void clearCache().finally(() => {
+      logger.warn('exitApp');
+      BackHandler.exitApp();
+    });
   }, [clearCache]);
 
   return (

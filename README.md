@@ -7,6 +7,7 @@
 - React Native `0.86`
 - TypeScript strict
 - React Navigation native stack
+- FastImage
 - Zustand
 - MMKV
 - FakerJS
@@ -66,7 +67,8 @@ UI не содержит сетевой логики, прямой работы 
 - При повреждённом MMKV JSON cache ключ удаляется и выполняется controlled refetch.
 - URL картинок создаются через `faker.image.personPortrait(...)` и получают query-параметр `cacheBust`, чтобы React Native не переиспользовал старую закешированную картинку после очистки.
 - Для сброса старых серых/неудачных image URL используются новые MMKV keys `posts:list:v3` и `posts:details:v3`.
-- Кнопка `Clear cache` вызывает полную очистку MMKV, сбрасывает store state и увеличивает `cacheVersion`; экраны автоматически делают новый load и получают новые URL картинок.
+- Картинки рендерятся через `react-native-fast-image` с `priority: FastImage.priority.normal` и `cache: FastImage.cacheControl.immutable`.
+- Кнопка `Clear cache` очищает MMKV, FastImage memory/disk cache, сбрасывает store state и закрывает приложение через `BackHandler.exitApp()`. Она не запускает повторный fetch; следующий запуск будет свежим, как после установки.
 - Логи помогают проверить:
   - `request:start` / `request:success` — фактические network вызовы;
   - `cache-hit` / `cache-miss-fetch-start` — cache behavior;

@@ -10,9 +10,6 @@ export const selectPosts = (state: PostsState): PostListItem[] => state.posts;
 export const selectFavoriteIds = (state: PostsState): number[] =>
   state.favoriteIds;
 
-export const selectCacheVersion = (state: PostsState): number =>
-  state.cacheVersion;
-
 export const selectIsPostsLoading = (state: PostsState): boolean =>
   state.isPostsLoading;
 
