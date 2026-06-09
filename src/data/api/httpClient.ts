@@ -1,0 +1,23 @@
+export class HttpError extends Error {
+  constructor(
+    public readonly url: string,
+    public readonly status: number,
+    public readonly statusText: string,
+  ) {
+    super(`HTTP ${status} ${statusText} for ${url}`);
+    this.name = 'HttpError';
+  }
+}
+
+export async function requestJson<TResponse>(
+  url: string,
+  init?: RequestInit,
+): Promise<TResponse> {
+  const response = await fetch(url, init);
+
+  if (!response.ok) {
+    throw new HttpError(url, response.status, response.statusText);
+  }
+
+  return (await response.json()) as TResponse;
+}
