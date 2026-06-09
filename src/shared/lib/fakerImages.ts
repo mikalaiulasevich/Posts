@@ -17,11 +17,8 @@ export function createListImageUrl(): string {
   });
 
   return withCacheBust(
-    faker.image.urlPicsumPhotos({
-      blur: 0,
-      grayscale: false,
-      width: POST_LIST_IMAGE_SIZE,
-      height: POST_LIST_IMAGE_SIZE,
+    faker.image.personPortrait({
+      size: POST_LIST_IMAGE_SIZE,
     }),
     cacheBust,
   );
@@ -37,11 +34,8 @@ export function createDetailsImageUrl(): string {
   });
 
   return withCacheBust(
-    faker.image.urlPicsumPhotos({
-      blur: 0,
-      grayscale: false,
-      width: POST_DETAILS_IMAGE_SIZE,
-      height: POST_DETAILS_IMAGE_SIZE,
+    faker.image.personPortrait({
+      size: 512,
     }),
     cacheBust,
   );

@@ -2,6 +2,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   Image,
+  type ImageErrorEvent,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -54,6 +55,16 @@ export function DetailsScreen({
     toggleFavorite(postId);
   }, [postId, toggleFavorite]);
 
+  const handleImageError = useCallback(
+    (event: ImageErrorEvent) => {
+      logger.error('image:error', {
+        error: event.nativeEvent.error,
+        id: postId,
+      });
+    },
+    [postId],
+  );
+
   if ((isLoading || !hasRequestedDetails) && details == null) {
     return <LoadingState label="Loading post details..." />;
   }
@@ -74,7 +85,7 @@ export function DetailsScreen({
   return (
     <ScrollView contentContainerStyle={styles.content} style={styles.container}>
       <Image
-        onError={() => logger.error('image:error', { id: details.id })}
+        onError={handleImageError}
         onLoad={() => logger.info('image:loaded', { id: details.id })}
         source={{ uri: details.imageUrl }}
         style={styles.image}
