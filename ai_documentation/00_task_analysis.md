@@ -46,7 +46,6 @@
 - React Navigation: установлены `@react-navigation/native` и `@react-navigation/native-stack` версии 7.x.
 - State-manager: установлен `zustand`.
 - Storage: установлен `react-native-mmkv` и `react-native-nitro-modules`.
-- Styling: установлен `react-native-unistyles`.
 - FakerJS: `@faker-js/faker` пока отсутствует в `package.json`; это риск для фазы реализации.
 - `src/` пустая, приложение ещё не реализовано.
 - README пока стандартный от React Native CLI.
