@@ -13,20 +13,26 @@ export const selectIsPostsLoading = (state: PostsState): boolean =>
 export const selectPostsError = (state: PostsState): string | null =>
   state.postsError;
 
-export const selectSortedPosts = (state: PostsState): PostListItem[] => {
-  const favoriteIds = new Set(state.favoriteIds);
+export function sortPostsWithFavorites(
+  posts: PostListItem[],
+  favoriteIds: number[],
+): PostListItem[] {
+  const favoriteIdSet = new Set(favoriteIds);
 
-  return [...state.posts].sort((firstPost, secondPost) => {
-    const isFirstFavorite = favoriteIds.has(firstPost.id);
-    const isSecondFavorite = favoriteIds.has(secondPost.id);
+  return posts
+    .map((post, index) => ({ index, post }))
+    .sort((firstItem, secondItem) => {
+      const isFirstFavorite = favoriteIdSet.has(firstItem.post.id);
+      const isSecondFavorite = favoriteIdSet.has(secondItem.post.id);
 
-    if (isFirstFavorite === isSecondFavorite) {
-      return 0;
-    }
+      if (isFirstFavorite === isSecondFavorite) {
+        return firstItem.index - secondItem.index;
+      }
 
-    return isFirstFavorite ? -1 : 1;
-  });
-};
+      return isFirstFavorite ? -1 : 1;
+    })
+    .map(({ post }) => post);
+}
 
 export const selectIsFavorite =
   (id: number) =>

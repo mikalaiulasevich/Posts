@@ -18,10 +18,27 @@ export class FavoritesRepository {
 
   getFavoriteIds(): number[] {
     try {
-      const favoriteIds = this.storage.getJson<unknown>(STORAGE_KEYS.favorites);
-      return normalizeFavoriteIds(favoriteIds);
+      const favoriteIds = this.storage.getJson(STORAGE_KEYS.favorites);
+
+      if (favoriteIds == null) {
+        return [];
+      }
+
+      if (!Array.isArray(favoriteIds)) {
+        this.storage.remove(STORAGE_KEYS.favorites);
+        return [];
+      }
+
+      const normalizedFavoriteIds = normalizeFavoriteIds(favoriteIds);
+
+      if (normalizedFavoriteIds.length !== favoriteIds.length) {
+        this.storage.setJson(STORAGE_KEYS.favorites, normalizedFavoriteIds);
+      }
+
+      return normalizedFavoriteIds;
     } catch (error) {
       if (error instanceof StorageParseError) {
+        this.storage.remove(STORAGE_KEYS.favorites);
         return [];
       }
 
@@ -41,13 +58,14 @@ export class FavoritesRepository {
   }
 }
 
-function normalizeFavoriteIds(value: unknown): number[] {
-  if (!Array.isArray(value)) {
-    return [];
-  }
-
+function normalizeFavoriteIds(value: unknown[]): number[] {
   return Array.from(
-    new Set(value.filter((id): id is number => Number.isInteger(id) && id > 0)),
+    new Set(
+      value.filter(
+        (id): id is number =>
+          typeof id === 'number' && Number.isInteger(id) && id > 0,
+      ),
+    ),
   );
 }
 

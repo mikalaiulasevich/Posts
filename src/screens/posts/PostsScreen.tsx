@@ -1,5 +1,5 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 
 import type { PostListItem as PostListItemModel } from '../../entities/post/types';
@@ -10,8 +10,9 @@ import { LoadingState } from '../../shared/ui/LoadingState';
 import {
   selectFavoriteIds,
   selectIsPostsLoading,
+  selectPosts,
   selectPostsError,
-  selectSortedPosts,
+  sortPostsWithFavorites,
 } from '../../store/selectors';
 import { usePostsStore } from '../../store/postsStore';
 
@@ -22,12 +23,16 @@ type PostsScreenProps = NativeStackScreenProps<RootStackParamList, 'Posts'>;
 export function PostsScreen({
   navigation,
 }: PostsScreenProps): React.JSX.Element {
-  const posts = usePostsStore(selectSortedPosts);
+  const posts = usePostsStore(selectPosts);
   const favoriteIds = usePostsStore(selectFavoriteIds);
   const isLoading = usePostsStore(selectIsPostsLoading);
   const error = usePostsStore(selectPostsError);
   const loadPosts = usePostsStore(state => state.loadPosts);
   const [hasRequestedPosts, setHasRequestedPosts] = useState(false);
+  const sortedPosts = useMemo(
+    () => sortPostsWithFavorites(posts, favoriteIds),
+    [favoriteIds, posts],
+  );
 
   const requestPosts = useCallback(() => {
     setHasRequestedPosts(true);
@@ -70,7 +75,7 @@ export function PostsScreen({
     <View style={styles.container}>
       <FlatList
         contentContainerStyle={styles.content}
-        data={posts}
+        data={sortedPosts}
         keyExtractor={item => String(item.id)}
         renderItem={renderItem}
         ItemSeparatorComponent={Separator}

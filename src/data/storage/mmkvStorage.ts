@@ -1,8 +1,8 @@
 import { createMMKV } from 'react-native-mmkv';
 
 export type JsonStorageAdapter = {
-  getJson: <TValue>(key: string) => TValue | null;
-  setJson: <TValue>(key: string, value: TValue) => void;
+  getJson: (key: string) => unknown | null;
+  setJson: (key: string, value: unknown) => void;
   remove: (key: string) => void;
   contains: (key: string) => boolean;
 };
@@ -24,7 +24,7 @@ function getNativeStorage(): NativeStorage {
 }
 
 export const mmkvStorage: JsonStorageAdapter = {
-  getJson<TValue>(key: string): TValue | null {
+  getJson(key: string): unknown | null {
     const rawValue = getNativeStorage().getString(key);
 
     if (rawValue == null) {
@@ -32,13 +32,13 @@ export const mmkvStorage: JsonStorageAdapter = {
     }
 
     try {
-      return JSON.parse(rawValue) as TValue;
+      return JSON.parse(rawValue);
     } catch {
       throw new StorageParseError(key);
     }
   },
 
-  setJson<TValue>(key: string, value: TValue): void {
+  setJson(key: string, value: unknown): void {
     getNativeStorage().set(key, JSON.stringify(value));
   },
 

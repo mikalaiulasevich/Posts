@@ -2,9 +2,11 @@ import { postsApiClient, type PostsApiClient } from '../data/api/postsApi';
 import {
   mmkvStorage,
   type JsonStorageAdapter,
+  StorageParseError,
 } from '../data/storage/mmkvStorage';
 import { postDetailsKey } from '../data/storage/storageKeys';
 import { createPostDetails } from '../entities/post/factories';
+import { isPostDetails } from '../entities/post/guards';
 import type { PostDetails } from '../entities/post/types';
 
 export type DetailsRepositoryDependencies = {
@@ -15,6 +17,10 @@ export type DetailsRepositoryDependencies = {
 export class DetailsRepository {
   private readonly apiClient: Pick<PostsApiClient, 'fetchPostDetails'>;
   private readonly storage: JsonStorageAdapter;
+  private readonly pendingDetailsRequests = new Map<
+    number,
+    Promise<PostDetails>
+  >();
 
   constructor(dependencies: DetailsRepositoryDependencies = {}) {
     this.apiClient = dependencies.apiClient ?? postsApiClient;
@@ -25,18 +31,67 @@ export class DetailsRepository {
     assertPostId(id);
 
     const storageKey = postDetailsKey(id);
-    const cachedDetails = this.storage.getJson<PostDetails>(storageKey);
+    const cachedDetails = this.readCachedDetails(storageKey);
 
     if (cachedDetails != null) {
       return cachedDetails;
     }
 
-    const apiPost = await this.apiClient.fetchPostDetails(id);
-    const enrichedDetails = createPostDetails(apiPost);
+    const pendingRequest = this.pendingDetailsRequests.get(id);
 
-    this.storage.setJson(storageKey, enrichedDetails);
+    if (pendingRequest != null) {
+      return pendingRequest;
+    }
 
-    return enrichedDetails;
+    const request = this.fetchAndCachePostDetails(id, storageKey);
+    this.pendingDetailsRequests.set(id, request);
+
+    try {
+      return await request;
+    } finally {
+      if (this.pendingDetailsRequests.get(id) === request) {
+        this.pendingDetailsRequests.delete(id);
+      }
+    }
+  }
+
+  private fetchAndCachePostDetails(
+    id: number,
+    storageKey: string,
+  ): Promise<PostDetails> {
+    return this.apiClient.fetchPostDetails(id).then(apiPost => {
+      const enrichedDetails = createPostDetails(apiPost);
+
+      this.storage.setJson(storageKey, enrichedDetails);
+
+      return enrichedDetails;
+    });
+  }
+
+  private readCachedDetails(storageKey: string): PostDetails | null {
+    let cachedDetails: unknown | null;
+
+    try {
+      cachedDetails = this.storage.getJson(storageKey);
+    } catch (error) {
+      if (error instanceof StorageParseError) {
+        this.storage.remove(storageKey);
+        return null;
+      }
+
+      throw error;
+    }
+
+    if (cachedDetails == null) {
+      return null;
+    }
+
+    if (!isPostDetails(cachedDetails)) {
+      this.storage.remove(storageKey);
+      return null;
+    }
+
+    return cachedDetails;
   }
 
   clearCache(id: number): void {

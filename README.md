@@ -1,97 +1,115 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Posts
 
-# Getting Started
+Небольшое React Native CLI приложение для тестового задания: список постов из JSONPlaceholder, экран деталей, избранное и persistence через MMKV.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## Стек
 
-## Step 1: Start Metro
+- React Native `0.86`
+- TypeScript strict
+- React Navigation native stack
+- Zustand
+- MMKV
+- FakerJS
+- Fetch API
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+## Что реализовано
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+- `PostsScreen` загружает список постов из `https://jsonplaceholder.typicode.com/posts`.
+- Каждый пост обогащается FakerJS-картинкой `32x32`.
+- `DetailsScreen` загружает пост из `https://jsonplaceholder.typicode.com/posts/{id}`.
+- Детали обогащаются FakerJS-картинкой `300x300`.
+- Пост можно добавить в избранное и удалить из избранного.
+- Избранные посты визуально выделяются и поднимаются вверх списка.
+- Enriched список, детали и `favoriteIds` сохраняются в MMKV.
+- При наличии cache повторный API-запрос не выполняется.
+- FakerJS-картинки генерируются только на первом enrichment и затем читаются из cache.
+
+## Архитектура
+
+Упрощённая Clean Architecture:
+
+```text
+UI -> Zustand store -> repositories -> api/storage/faker helper
+```
+
+Ключевые директории:
+
+```text
+src/
+  app/                 # Application root
+  navigation/          # Native stack navigation
+  screens/             # PostsScreen, DetailsScreen, UI components
+  store/               # Zustand state, actions, selectors/helpers
+  repositories/        # Repository Pattern, cache-first data access
+  data/
+    api/               # fetch API client
+    storage/           # MMKV JSON adapter and keys
+  entities/post/       # post types, factories, runtime guards
+  shared/              # UI states and FakerJS image helper
+```
+
+UI не содержит сетевой логики, прямой работы с MMKV или вызовов FakerJS.
+
+## Установка
 
 ```sh
-# Using npm
+npm install
+```
+
+## Запуск
+
+Metro:
+
+```sh
 npm start
-
-# OR using Yarn
-yarn start
 ```
 
-## Step 2: Build and run your app
-
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
+Android:
 
 ```sh
-# Using npm
 npm run android
-
-# OR using Yarn
-yarn android
 ```
 
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+iOS:
 
 ```sh
-bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
 npm run ios
-
-# OR using Yarn
-yarn ios
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+Для iOS при первом запуске установите pods:
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+```sh
+cd ios
+bundle install
+bundle exec pod install
+cd ..
+```
 
-## Step 3: Modify your app
+## Проверки
 
-Now that you have successfully run the app, let's make changes!
+TypeScript:
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+```sh
+npm run typecheck
+```
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+ESLint:
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+```sh
+npm run lint
+```
 
-## Congratulations! :tada:
+Проверка production bundle:
 
-You've successfully run and modified your React Native App. :partying_face:
+```sh
+npx react-native bundle \
+  --entry-file index.js \
+  --platform ios \
+  --dev false \
+  --bundle-output /tmp/posts-bundle-check/main.jsbundle \
+  --assets-dest /tmp/posts-assets-check
+```
 
-### Now what?
+## AI-only материалы
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+Документация по анализу требований, архитектуре, плану реализации и acceptance checklist находится в `ai_documentation/`.

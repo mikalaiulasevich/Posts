@@ -9,15 +9,15 @@ export class HttpError extends Error {
   }
 }
 
-export async function requestJson<TResponse>(
+export async function requestJson(
   url: string,
   init?: RequestInit,
-): Promise<TResponse> {
+): Promise<unknown> {
   const response = await fetch(url, init);
 
   if (!response.ok) {
     throw new HttpError(url, response.status, response.statusText);
   }
 
-  return (await response.json()) as TResponse;
+  return response.json();
 }
