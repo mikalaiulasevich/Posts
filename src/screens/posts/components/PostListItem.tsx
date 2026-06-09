@@ -2,6 +2,9 @@ import React from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { PostListItem as PostListItemModel } from '../../../entities/post/types';
+import { createLogger } from '../../../shared/lib/logger';
+
+const logger = createLogger('PostListItem');
 
 type PostListItemProps = {
   post: PostListItemModel;
@@ -24,7 +27,12 @@ export function PostListItem({
         pressed && styles.pressed,
       ]}
     >
-      <Image source={{ uri: post.thumbnailUrl }} style={styles.thumbnail} />
+      <Image
+        onError={() => logger.error('thumbnail:error', { id: post.id })}
+        onLoad={() => logger.info('thumbnail:loaded', { id: post.id })}
+        source={{ uri: post.thumbnailUrl }}
+        style={styles.thumbnail}
+      />
       <View style={styles.content}>
         <View style={styles.titleRow}>
           <Text numberOfLines={2} style={styles.title}>

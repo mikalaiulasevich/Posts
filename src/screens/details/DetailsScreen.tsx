@@ -14,6 +14,7 @@ import { createLogger } from '../../shared/lib/logger';
 import { ErrorState } from '../../shared/ui/ErrorState';
 import { LoadingState } from '../../shared/ui/LoadingState';
 import {
+  selectCacheVersion,
   selectIsFavorite,
   selectIsPostDetailsLoading,
   selectPostDetails,
@@ -30,6 +31,7 @@ export function DetailsScreen({
 }: DetailsScreenProps): React.JSX.Element {
   const { postId } = route.params;
   const details = usePostsStore(selectPostDetails(postId));
+  const cacheVersion = usePostsStore(selectCacheVersion);
   const isLoading = usePostsStore(selectIsPostDetailsLoading(postId));
   const error = usePostsStore(selectPostDetailsError(postId));
   const isFavorite = usePostsStore(selectIsFavorite(postId));
@@ -45,7 +47,7 @@ export function DetailsScreen({
 
   useEffect(() => {
     requestDetails();
-  }, [requestDetails]);
+  }, [cacheVersion, requestDetails]);
 
   const handleToggleFavorite = useCallback(() => {
     logger.info('toggleFavorite:press', { id: postId });
@@ -71,7 +73,12 @@ export function DetailsScreen({
 
   return (
     <ScrollView contentContainerStyle={styles.content} style={styles.container}>
-      <Image source={{ uri: details.imageUrl }} style={styles.image} />
+      <Image
+        onError={() => logger.error('image:error', { id: details.id })}
+        onLoad={() => logger.info('image:loaded', { id: details.id })}
+        source={{ uri: details.imageUrl }}
+        style={styles.image}
+      />
       <View style={styles.card}>
         <Text style={styles.title}>{details.title}</Text>
         <Text style={styles.body}>{details.body}</Text>

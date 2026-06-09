@@ -30,6 +30,7 @@
 - При наличии cache повторный API-запрос не выполняется.
 - FakerJS-картинки генерируются только на первом enrichment и затем читаются из cache.
 - В ключевых слоях добавлены безопасные diagnostic logs с префиксом `PostsApp`.
+- В header есть кнопка `Clear cache` для полной очистки MMKV и перегенерации URL картинок.
 
 ## Архитектура
 
@@ -63,6 +64,9 @@ UI не содержит сетевой логики, прямой работы 
 - При cache hit API и FakerJS enrichment не вызываются.
 - При первом parallel cache miss используется in-flight dedupe, чтобы не запускать повторный API/FakerJS flow.
 - При повреждённом MMKV JSON cache ключ удаляется и выполняется controlled refetch.
+- URL картинок создаются через `faker.image.urlPicsumPhotos(...)` и получают query-параметр `cacheBust`, чтобы React Native не переиспользовал старую закешированную картинку после очистки.
+- Для сброса старых серых/неудачных image URL используются новые MMKV keys `posts:list:v2` и `posts:details:v2`.
+- Кнопка `Clear cache` вызывает полную очистку MMKV, сбрасывает store state и увеличивает `cacheVersion`; экраны автоматически делают новый load и получают новые URL картинок.
 - Логи помогают проверить:
   - `request:start` / `request:success` — фактические network вызовы;
   - `cache-hit` / `cache-miss-fetch-start` — cache behavior;

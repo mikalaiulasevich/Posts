@@ -9,6 +9,7 @@ export type JsonStorageAdapter = {
   setJson: (key: string, value: unknown) => void;
   remove: (key: string) => void;
   contains: (key: string) => boolean;
+  clearAll: () => void;
 };
 
 export class StorageParseError extends Error {
@@ -70,5 +71,12 @@ export const mmkvStorage: JsonStorageAdapter = {
     logger.info('key:contains', { hasKey, key });
 
     return hasKey;
+  },
+
+  clearAll(): void {
+    const keyCount = getNativeStorage().getAllKeys().length;
+
+    getNativeStorage().clearAll();
+    logger.warn('storage:clear-all', { keyCount });
   },
 };

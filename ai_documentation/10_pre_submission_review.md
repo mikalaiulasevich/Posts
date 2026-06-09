@@ -17,6 +17,8 @@
 - Enriched список, details и `favoriteIds` сохраняются локально в MMKV.
 - При наличии cache повторный API-запрос не выполняется.
 - При parallel first cache miss повторный API/FakerJS flow предотвращается in-flight dedupe.
+- URL картинок получают `cacheBust` query-параметр.
+- Header содержит кнопку `Clear cache` для полной очистки MMKV и перезагрузки данных.
 - Избранное сохраняется после перезапуска через MMKV.
 - Избранные посты визуально выделяются и поднимаются вверх списка.
 - Toggle favorite реализован на `DetailsScreen`.
@@ -73,5 +75,7 @@ grep -RniE "(API_KEY|SECRET|TOKEN|PRIVATE KEY|BEGIN RSA|ghp_|sk-)" . --exclude-d
 - `[PostsApp:FakerImages] list-image:generate` — генерация `32x32` картинки списка.
 - `[PostsApp:FakerImages] details-image:generate` — генерация `300x300` картинки details.
 - `[PostsApp:FavoritesRepository] favorites:set` — избранное сохранено.
+- `[PostsApp:CacheRepository] clearAll:success` — MMKV cache очищен кнопкой в header.
+- `[PostsApp:PostListItem] thumbnail:loaded` и `[PostsApp:DetailsScreen] image:loaded` — remote image загрузилась.
 - Diagnostic logs видны по умолчанию через `console.log`/`console.warn`/`console.error`.
 - Для временного отключения можно установить `globalThis.POSTS_APP_LOGS_DISABLED = true`.

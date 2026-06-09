@@ -1,6 +1,6 @@
 export const STORAGE_KEYS = {
-  posts: 'posts:list:v1',
-  detailsPrefix: 'posts:details:v1',
+  posts: 'posts:list:v2',
+  detailsPrefix: 'posts:details:v2',
   favorites: 'posts:favorites:v1',
 } as const;
 
