@@ -1,0 +1,33 @@
+# Deep Interview Context Snapshot: AI Documentation Planning
+
+- Task statement: User invoked `$oh-my-codex:deep-interview prompt.md`; `prompt.md` asks for AI-only planning/documentation for a React Native test assignment and explicitly says not to implement app code yet.
+- Desired outcome: Clarify whether to proceed with creating `ai_documatation/` markdown planning documents exactly as requested, and produce a requirements/spec handoff for downstream execution.
+- Stated solution: Create `ai_documatation` with files `00_task_analysis.md` through `09_final_acceptance_checklist.md` covering task analysis, architecture, data model, implementation plan, checklists, prompts, decisions/ADRs, testing strategy, README plan, and final acceptance checklist.
+- Probable intent hypothesis: Provide credible AI-only process evidence and an engineering plan before implementing a React Native posts/favorites app.
+- Known facts/evidence:
+  - `task.md` contains the original Russian test assignment: RN >=0.77, TypeScript, React Navigation >=7, FakerJS, no Expo, any state manager, clean architecture, GitHub README with install/run instructions, AI-only artifacts.
+  - `prompt.md` expands the task and documentation deliverables; it requests documentation only for this step.
+  - `package.json` currently uses React Native 0.86.0, TypeScript 5.8.3, React Navigation 7 packages, Zustand 5, react-native-mmkv 4, react-native-unistyles 3; no `@faker-js/faker` dependency is present in package.json.
+  - `src/` is currently empty; `index.js` imports `@posts/Application`, so implementation entrypoint appears not yet present.
+  - No repository-local `AGENTS.md` was found in `/Users/organicsoft/Posts` or its direct relevant path during preflight.
+  - README is still the default React Native CLI README.
+- Constraints:
+  - Deep-interview mode must not directly implement; it can clarify and write interview/spec artifacts, then hand off.
+  - User prompt says application code should not be implemented in this step.
+  - Documentation folder name is intentionally spelled `ai_documatation` in the prompt; confirm whether to preserve typo or normalize later if needed.
+- Unknowns/open questions:
+  - Whether the immediate next handoff should create the requested docs without more planning, or whether deep-interview should only produce a spec first.
+  - Whether to follow the prompt’s preference for AsyncStorage despite `package.json` already containing MMKV and not AsyncStorage.
+  - Whether to preserve exact folder typo `ai_documatation` for evaluator compatibility.
+- Decision-boundary unknowns:
+  - Can OMX decide storage choice in docs based on installed deps, or must it follow prompt preference for AsyncStorage?
+  - Can OMX add missing dependencies later (e.g. FakerJS) during implementation, or should documentation flag them only?
+- Likely codebase touchpoints:
+  - `package.json`, `README.md`, `task.md`, `prompt.md`, future `ai_documatation/*.md`, future `src/*`.
+- Relevant repo docs/rules/context inspected:
+  - `prompt.md`, `task.md`, `README.md`, `package.json`, `.omx/state/update-check.json`, root file tree, `src/` state.
+- Terminology or doc/code conflicts found:
+  - Prompt says choose/compare AsyncStorage vs MMKV and often prefers AsyncStorage for simplicity; package currently includes `react-native-mmkv` but not AsyncStorage.
+  - `prompt.md` requires FakerJS, but package currently lacks `@faker-js/faker`.
+  - Folder name requested as `ai_documatation`, likely typo but may be required by prompt.
+- Prompt-safe initial-context summary status: not_needed
