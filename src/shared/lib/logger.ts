@@ -10,6 +10,7 @@ type ScopedLogger = {
 };
 
 const APP_LOG_PREFIX = 'PostsApp';
+const LOGGER_DISABLED_FLAG = 'POSTS_APP_LOGS_DISABLED';
 
 export function createLogger(scope: string): ScopedLogger {
   return {
@@ -41,13 +42,33 @@ function writeLog(
   const prefix = `[${APP_LOG_PREFIX}:${scope}] ${message}`;
 
   if (metadata == null) {
-    console[level](prefix);
+    writeToConsole(level, prefix);
     return;
   }
 
-  console[level](prefix, metadata);
+  writeToConsole(level, prefix, metadata);
 }
 
 function isLoggerEnabled(): boolean {
-  return typeof __DEV__ === 'undefined' ? true : __DEV__;
+  const globalFlags = globalThis as Record<string, unknown>;
+
+  return globalFlags[LOGGER_DISABLED_FLAG] !== true;
+}
+
+function writeToConsole(
+  level: LogLevel,
+  prefix: string,
+  metadata?: LogMetadata,
+): void {
+  if (level === 'error') {
+    console.error(prefix, metadata);
+    return;
+  }
+
+  if (level === 'warn') {
+    console.warn(prefix, metadata);
+    return;
+  }
+
+  console.log(prefix, metadata);
 }

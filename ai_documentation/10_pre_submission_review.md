@@ -73,4 +73,5 @@ grep -RniE "(API_KEY|SECRET|TOKEN|PRIVATE KEY|BEGIN RSA|ghp_|sk-)" . --exclude-d
 - `[PostsApp:FakerImages] list-image:generate` — генерация `32x32` картинки списка.
 - `[PostsApp:FakerImages] details-image:generate` — генерация `300x300` картинки details.
 - `[PostsApp:FavoritesRepository] favorites:set` — избранное сохранено.
-- Diagnostic logs включены только в dev/runtime, где `__DEV__ === true`; production bundle не должен засоряться проверочными логами.
+- Diagnostic logs видны по умолчанию через `console.log`/`console.warn`/`console.error`.
+- Для временного отключения можно установить `globalThis.POSTS_APP_LOGS_DISABLED = true`.

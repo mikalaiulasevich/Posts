@@ -68,6 +68,8 @@ UI не содержит сетевой логики, прямой работы 
   - `cache-hit` / `cache-miss-fetch-start` — cache behavior;
   - `list-image:generate` / `details-image:generate` — моменты генерации FakerJS;
   - `favorites:set` / `favorites:get:restored` — persistence избранного.
+- Логи видны в Metro terminal / React Native DevTools / Xcode или Android Logcat как строки с префиксом `[PostsApp:...]`.
+- Если нужно временно отключить diagnostic logs, установите `globalThis.POSTS_APP_LOGS_DISABLED = true`.
 
 ## Установка
 
