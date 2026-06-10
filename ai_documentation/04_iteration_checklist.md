@@ -2,8 +2,8 @@
 
 ## Фаза 0
 
-- [x] Прочитать `task.md`.
-- [x] Прочитать `prompt.md`.
+- [x] Прочитать `ai_prompts/task.md`.
+- [x] Прочитать `ai_prompts/prompt.md`.
 - [x] Проверить `package.json`.
 - [x] Зафиксировать MMKV как storage-решение.
 - [x] Зафиксировать FakerJS как обязательную будущую зависимость.

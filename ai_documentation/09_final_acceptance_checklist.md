@@ -49,6 +49,11 @@
 - [x] `ai_documentation/07_testing_strategy.md` создан.
 - [x] `ai_documentation/08_readme_plan.md` создан.
 - [x] `ai_documentation/09_final_acceptance_checklist.md` создан.
+- [x] `ai_prompts/prompt.md` приложен.
+- [x] `ai_prompts/task.md` приложен.
+- [x] `ai_prompts/ai_dialog.md` приложен.
+- [x] `ai_prompts/polishing.md` приложен.
+- [x] `ai_prompts_screenshots/` приложены.
 - [x] Скриншоты или выгрузка чата добавлены перед сдачей.
 - [ ] Перед публикацией AI-доказательств удалены секреты, токены, приватные URL, персональные данные и лишние локальные пути.
 

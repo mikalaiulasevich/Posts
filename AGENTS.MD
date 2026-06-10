@@ -9,8 +9,8 @@
 
 Перед изменениями читать:
 
-1. `task.md` — исходное тестовое задание.
-2. `prompt.md` — AI-only правила и документационные требования.
+1. `ai_prompts/task.md` — исходное тестовое задание.
+2. `ai_prompts/prompt.md` — AI-only правила и документационные требования.
 3. `ai_documentation/00_task_analysis.md` — анализ требований.
 4. `ai_documentation/01_architecture_plan.md` — архитектурный план.
 5. `ai_documentation/03_implementation_plan.md` — фазы реализации.

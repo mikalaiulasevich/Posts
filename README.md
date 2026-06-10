@@ -139,6 +139,11 @@ npx react-native bundle \
 - `ai_documentation/05_ai_prompts.md`
 - `ai_documentation/06_decisions.md`
 - `ai_documentation/09_final_acceptance_checklist.md`
+- `ai_prompts/prompt.md`
+- `ai_prompts/task.md`
+- `ai_prompts/ai_dialog.md`
+- `ai_prompts/polishing.md`
+- `ai_prompts_screenshots/`
 
 Перед публикацией AI-доказательств нужно удалить секреты, приватные URL, персональные данные и лишние локальные пути из выгрузок чатов/скриншотов.
 

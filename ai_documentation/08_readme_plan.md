@@ -68,6 +68,11 @@ README должен ссылаться на:
 - `ai_documentation/03_implementation_plan.md`;
 - `ai_documentation/05_ai_prompts.md`;
 - `ai_documentation/06_decisions.md`;
+- `ai_prompts/prompt.md`;
+- `ai_prompts/task.md`;
+- `ai_prompts/ai_dialog.md`;
+- `ai_prompts/polishing.md`;
+- `ai_prompts_screenshots/`;
 - возможные скриншоты/выгрузки чата, если они будут добавлены позже.
 
 ## Известные ограничения

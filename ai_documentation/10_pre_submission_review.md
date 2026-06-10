@@ -65,7 +65,7 @@ git diff --check
 grep -RniE "fetch\\(|requestJson|createMMKV|MMKV|mmkvStorage|STORAGE_KEYS|postDetailsKey|@faker-js/faker|faker\\." src/screens src/store src/repositories src/data src/entities src/shared
 grep -RniE "react-native-fast-image|FastImage|Clear cache|CacheRepository|clearCache|size: 512" src README.md package.json package-lock.json ios/Podfile.lock ios/Pods/Manifest.lock
 grep -RniE "RefreshControl|pull-to-refresh|offline queue|server sync" src
-grep -RniE "(API[_]KEY|SEC[R]ET|TOK[E]N|PRIVATE[ ]KEY|BEGIN[ ]RSA|ghp[_]|sk[-])" AGENTS.MD README.md ai_dialog.md ai_documentation src package.json Gemfile Gemfile.lock task.md prompt.md
+grep -RniE "(API[_]KEY|SEC[R]ET|TOK[E]N|PRIVATE[ ]KEY|BEGIN[ ]RSA|ghp[_]|sk[-])" AGENTS.MD README.md ai_prompts/ai_dialog.md ai_documentation src package.json Gemfile Gemfile.lock ai_prompts/task.md ai_prompts/prompt.md
 ```
 
 ## Как читать diagnostic logs
