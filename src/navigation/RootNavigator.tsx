@@ -4,7 +4,6 @@ import React from 'react';
 import { DetailsScreen } from '../screens/details/DetailsScreen';
 import { PostsScreen } from '../screens/posts/PostsScreen';
 
-import { ClearCacheButton } from './ClearCacheButton';
 import type { RootStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -24,7 +23,6 @@ export function RootNavigator(): React.JSX.Element {
         headerTitleStyle: {
           fontWeight: '700',
         },
-        headerRight: () => <ClearCacheButton />,
       }}
     >
       <Stack.Screen

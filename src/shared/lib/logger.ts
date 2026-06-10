@@ -52,7 +52,11 @@ function writeLog(
 function isLoggerEnabled(): boolean {
   const globalFlags = globalThis as Record<string, unknown>;
 
-  return globalFlags[LOGGER_DISABLED_FLAG] !== true;
+  if (globalFlags[LOGGER_DISABLED_FLAG] === true) {
+    return false;
+  }
+
+  return globalFlags.__DEV__ !== false;
 }
 
 function writeToConsole(

@@ -1,7 +1,13 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
+import {
+  Image,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 import type { RootStackParamList } from '../../navigation/types';
 import { createLogger } from '../../shared/lib/logger';
@@ -65,15 +71,13 @@ export function DetailsScreen({
 
   return (
     <ScrollView contentContainerStyle={styles.content} style={styles.container}>
-      <FastImage
+      <Image
+        accessibilityIgnoresInvertColors
+        accessibilityLabel={`Image for post ${details.id}`}
         onError={() => logger.error('image:error', { id: details.id })}
         onLoad={() => logger.info('image:loaded', { id: details.id })}
-        resizeMode={FastImage.resizeMode.cover}
-        source={{
-          cache: FastImage.cacheControl.immutable,
-          priority: FastImage.priority.normal,
-          uri: details.imageUrl,
-        }}
+        resizeMode="cover"
+        source={{ uri: details.imageUrl }}
         style={styles.image}
       />
       <View style={styles.card}>

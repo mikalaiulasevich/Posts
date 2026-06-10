@@ -98,11 +98,6 @@ export class PostsRepository {
 
     return cachedPosts;
   }
-
-  clearCache(): void {
-    this.storage.remove(STORAGE_KEYS.posts);
-    logger.info('cache:clear');
-  }
 }
 
 export const postsRepository = new PostsRepository();

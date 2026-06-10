@@ -1,6 +1,5 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { PostListItem as PostListItemModel } from '../../../entities/post/types';
 import { createLogger } from '../../../shared/lib/logger';
@@ -28,15 +27,13 @@ export function PostListItem({
         pressed && styles.pressed,
       ]}
     >
-      <FastImage
+      <Image
+        accessibilityIgnoresInvertColors
+        accessibilityLabel={`Thumbnail for post ${post.id}`}
         onError={() => logger.error('thumbnail:error', { id: post.id })}
         onLoad={() => logger.info('thumbnail:loaded', { id: post.id })}
-        resizeMode={FastImage.resizeMode.cover}
-        source={{
-          cache: FastImage.cacheControl.immutable,
-          priority: FastImage.priority.normal,
-          uri: post.thumbnailUrl,
-        }}
+        resizeMode="cover"
+        source={{ uri: post.thumbnailUrl }}
         style={styles.thumbnail}
       />
       <View style={styles.content}>

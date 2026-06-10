@@ -106,12 +106,6 @@ export class DetailsRepository {
 
     return cachedDetails;
   }
-
-  clearCache(id: number): void {
-    assertPostId(id);
-    this.storage.remove(postDetailsKey(id));
-    logger.info('cache:clear', { id });
-  }
 }
 
 function assertPostId(id: number): void {

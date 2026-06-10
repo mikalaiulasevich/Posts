@@ -18,8 +18,7 @@
 - При наличии cache повторный API-запрос не выполняется.
 - При parallel first cache miss повторный API/FakerJS flow предотвращается in-flight dedupe.
 - URL картинок получают `cacheBust` query-параметр.
-- Картинки рендерятся через `react-native-fast-image` с immutable cache.
-- Header содержит кнопку `Clear cache` для полной очистки MMKV/FastImage cache и закрытия приложения без повторного fetch.
+- Картинки рендерятся стандартным React Native `Image`; URL остаётся стабильным за счёт MMKV cache.
 - Избранное сохраняется после перезапуска через MMKV.
 - Избранные посты визуально выделяются и поднимаются вверх списка.
 - Toggle favorite реализован на `DetailsScreen`.
@@ -36,7 +35,7 @@
 
 ### README и AI-only
 
-- README содержит установку одной командой: `npm install`.
+- README содержит установку одной командой: `npm run setup`.
 - README содержит команды запуска: `npm start`, `npm run android`, `npm run ios`.
 - README объясняет архитектуру.
 - README описывает AI-only материалы.
@@ -46,7 +45,7 @@
 ## Риски и неподтверждённые вручную пункты
 
 - Код ещё нужно выложить в GitHub, если репозиторий не опубликован.
-- Скриншоты или выгрузку чата нужно добавить перед сдачей.
+- Скриншоты и краткая выгрузка чата добавлены в репозиторий.
 - Перед публикацией AI-доказательств нужно удалить секреты, токены, приватные URL, персональные данные и лишние локальные пути.
 - Реальный Android запуск не выполнялся в этой CLI-сессии.
 - Реальный iOS Simulator запуск не выполнялся в этой CLI-сессии; вместо него проверен production bundle для iOS.
@@ -55,16 +54,18 @@
 ## Команды, запущенные для проверки
 
 ```sh
-npm install --dry-run --ignore-scripts --legacy-peer-deps
+npm run setup
+npm ls react-native-fast-image eslint react react-native @faker-js/faker
 npm run typecheck
 npm run lint -- --max-warnings=0
-npx prettier --check 'src/**/*.{ts,tsx}' package.json README.md eslint.config.js index.js ai_documentation/10_pre_submission_review.md
+npx prettier --check 'src/**/*.{ts,tsx}' package.json package-lock.json README.md 'ai_documentation/**/*.md' AGENTS.MD
 npx react-native bundle --entry-file index.js --platform ios --dev false --bundle-output /tmp/posts-bundle-check-ios/main.jsbundle --assets-dest /tmp/posts-assets-check-ios
 npx react-native bundle --entry-file index.js --platform android --dev false --bundle-output /tmp/posts-bundle-check-android/main.jsbundle --assets-dest /tmp/posts-assets-check-android
 git diff --check
-grep -RniE "fetch\\(|requestJson|createMMKV|MMKV|mmkvStorage|STORAGE_KEYS|postDetailsKey|@faker-js/faker|faker\\." src/screens src/store
+grep -RniE "fetch\\(|requestJson|createMMKV|MMKV|mmkvStorage|STORAGE_KEYS|postDetailsKey|@faker-js/faker|faker\\." src/screens src/store src/repositories src/data src/entities src/shared
+grep -RniE "react-native-fast-image|FastImage|Clear cache|CacheRepository|clearCache|size: 512" src README.md package.json package-lock.json ios/Podfile.lock ios/Pods/Manifest.lock
 grep -RniE "RefreshControl|pull-to-refresh|offline queue|server sync" src
-grep -RniE "(API_KEY|SECRET|TOKEN|PRIVATE KEY|BEGIN RSA|ghp_|sk-)" . --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=.omx --exclude=package-lock.json
+grep -RniE "(API[_]KEY|SEC[R]ET|TOK[E]N|PRIVATE[ ]KEY|BEGIN[ ]RSA|ghp[_]|sk[-])" AGENTS.MD README.md ai_dialog.md ai_documentation src package.json Gemfile Gemfile.lock task.md prompt.md
 ```
 
 ## Как читать diagnostic logs
@@ -76,7 +77,6 @@ grep -RniE "(API_KEY|SECRET|TOKEN|PRIVATE KEY|BEGIN RSA|ghp_|sk-)" . --exclude-d
 - `[PostsApp:FakerImages] list-image:generate` — генерация `32x32` картинки списка.
 - `[PostsApp:FakerImages] details-image:generate` — генерация `300x300` картинки details.
 - `[PostsApp:FavoritesRepository] favorites:set` — избранное сохранено.
-- `[PostsApp:CacheRepository] clearAll:success` — MMKV cache очищен кнопкой в header.
 - `[PostsApp:PostListItem] thumbnail:loaded` и `[PostsApp:DetailsScreen] image:loaded` — remote image загрузилась.
-- Diagnostic logs видны по умолчанию через `console.log`/`console.warn`/`console.error`.
-- Для временного отключения можно установить `globalThis.POSTS_APP_LOGS_DISABLED = true`.
+- Diagnostic logs видны в debug через `console.log`/`console.warn`/`console.error`.
+- В production-like runtime (`globalThis.__DEV__ === false`) logger молчит; для временного отключения в debug можно установить `globalThis.POSTS_APP_LOGS_DISABLED = true`.

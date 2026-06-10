@@ -2,8 +2,8 @@ import { faker } from '@faker-js/faker';
 
 import { createLogger } from './logger';
 
-export const POST_LIST_IMAGE_SIZE = 32;
-export const POST_DETAILS_IMAGE_SIZE = 300;
+const POST_LIST_IMAGE_SIZE = 32;
+const POST_DETAILS_IMAGE_SIZE = 300;
 
 const logger = createLogger('FakerImages');
 
@@ -34,8 +34,9 @@ export function createDetailsImageUrl(): string {
   });
 
   return withCacheBust(
-    faker.image.personPortrait({
-      size: 512,
+    faker.image.url({
+      height: POST_DETAILS_IMAGE_SIZE,
+      width: POST_DETAILS_IMAGE_SIZE,
     }),
     cacheBust,
   );

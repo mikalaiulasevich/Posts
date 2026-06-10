@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "setup": "npm install && bundle install && cd ios && bundle exec pod install",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "lint": "eslint .",
@@ -15,7 +16,6 @@
     "@react-navigation/native-stack": "^7.17.2",
     "react": "19.2.3",
     "react-native": "0.86.0",
-    "react-native-fast-image": "^8.6.3",
     "react-native-mmkv": "^4.3.1",
     "react-native-nitro-modules": "^0.35.9",
     "react-native-safe-area-context": "^5.8.0",
@@ -35,7 +35,7 @@
     "@react-native/typescript-config": "0.86.0",
     "@types/react": "^19.2.0",
     "@types/react-test-renderer": "^19.1.0",
-    "eslint": "^10.4.1",
+    "eslint": "^8.57.1",
     "prettier": "3.8.4",
     "typescript": "^5.8.3"
   },

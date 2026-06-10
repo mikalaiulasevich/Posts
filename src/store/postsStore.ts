@@ -1,10 +1,6 @@
 import { create } from 'zustand';
 
 import {
-  cacheRepository,
-  type CacheRepository,
-} from '../repositories/CacheRepository';
-import {
   detailsRepository,
   type DetailsRepository,
 } from '../repositories/DetailsRepository';
@@ -16,8 +12,8 @@ import {
   postsRepository,
   type PostsRepository,
 } from '../repositories/PostsRepository';
-import { createLogger } from '../shared/lib/logger';
 import type { PostDetails, PostListItem } from '../entities/post/types';
+import { createLogger } from '../shared/lib/logger';
 
 const logger = createLogger('PostsStore');
 
@@ -25,7 +21,6 @@ export type PostsStoreDependencies = {
   postsRepository?: PostsRepository;
   detailsRepository?: DetailsRepository;
   favoritesRepository?: FavoritesRepository;
-  cacheRepository?: CacheRepository;
 };
 
 export type PostsState = {
@@ -39,14 +34,12 @@ export type PostsState = {
   loadPosts: () => Promise<void>;
   loadPostDetails: (id: number) => Promise<void>;
   toggleFavorite: (id: number) => void;
-  clearCache: () => Promise<void>;
 };
 
 export function createPostsStore(dependencies: PostsStoreDependencies = {}) {
   const postsRepo = dependencies.postsRepository ?? postsRepository;
   const detailsRepo = dependencies.detailsRepository ?? detailsRepository;
   const favoritesRepo = dependencies.favoritesRepository ?? favoritesRepository;
-  const cacheRepo = dependencies.cacheRepository ?? cacheRepository;
   const initialFavoriteIds = favoritesRepo.getFavoriteIds();
 
   logger.info('store:init', { favoriteCount: initialFavoriteIds.length });
@@ -137,38 +130,20 @@ export function createPostsStore(dependencies: PostsStoreDependencies = {}) {
     toggleFavorite(id: number): void {
       assertPostId(id);
 
-      set(state => {
-        const isFavorite = state.favoriteIds.includes(id);
-        const favoriteIds = isFavorite
-          ? state.favoriteIds.filter(favoriteId => favoriteId !== id)
-          : [...state.favoriteIds, id];
+      const currentFavoriteIds = get().favoriteIds;
+      const isFavorite = currentFavoriteIds.includes(id);
+      const favoriteIds = isFavorite
+        ? currentFavoriteIds.filter(favoriteId => favoriteId !== id)
+        : [...currentFavoriteIds, id];
 
-        favoritesRepo.setFavoriteIds(favoriteIds);
-        logger.info('toggleFavorite:success', {
-          favoriteCount: favoriteIds.length,
-          id,
-          nextIsFavorite: !isFavorite,
-        });
+      favoritesRepo.setFavoriteIds(favoriteIds);
+      set({ favoriteIds });
 
-        return { favoriteIds };
+      logger.info('toggleFavorite:success', {
+        favoriteCount: favoriteIds.length,
+        id,
+        nextIsFavorite: !isFavorite,
       });
-    },
-
-    async clearCache(): Promise<void> {
-      logger.warn('clearCache:start');
-      await cacheRepo.clearAll();
-
-      set({
-        posts: [],
-        detailsById: {},
-        favoriteIds: [],
-        isPostsLoading: false,
-        detailsLoadingById: {},
-        postsError: null,
-        detailsErrorById: {},
-      });
-
-      logger.warn('clearCache:success');
     },
   }));
 }

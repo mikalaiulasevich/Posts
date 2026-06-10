@@ -1,6 +1,7 @@
 # 02. Модель данных
 
 ## API Post type
+
 ```ts
 export type ApiPost = {
   userId: number;
@@ -11,6 +12,7 @@ export type ApiPost = {
 ```
 
 ## Enriched post для списка
+
 ```ts
 export type PostListItem = {
   id: number;
@@ -22,6 +24,7 @@ export type PostListItem = {
 ```
 
 ## Details post
+
 ```ts
 export type PostDetails = {
   id: number;
@@ -33,6 +36,7 @@ export type PostDetails = {
 ```
 
 ## Структура store
+
 ```ts
 type PostsState = {
   posts: PostListItem[];
@@ -50,39 +54,49 @@ type PostsState = {
 ```
 
 ## Persisted state в MMKV
+
 ```ts
-type PersistedPostsState = {
-  posts: PostListItem[];
-  detailsById: Record<string, PostDetails>;
-  favoriteIds: number[];
-  version: number;
-};
+// Список хранится одним ключом:
+PostListItem[];
+
+// Details хранится отдельным ключом на каждый postId:
+PostDetails;
+
+// Избранное хранится отдельным ключом:
+number[];
 ```
 
 ## Storage keys
+
 ```ts
 const STORAGE_KEYS = {
-  posts: 'posts:list:v1',
-  details: 'posts:details:v1',
+  posts: 'posts:list:v3',
+  detailsPrefix: 'posts:details:v3',
   favorites: 'posts:favorites:v1',
 };
+
+const postDetailsKey = (id: number) => `${STORAGE_KEYS.detailsPrefix}:${id}`;
 ```
 
 ## Правила FakerJS-изображений
+
 - Для списка используется изображение 32x32.
-- Для деталей используется изображение 300x300.
+- Для деталей используется изображение 300x300 через `faker.image.url({ width: 300, height: 300 })`.
 - Изображение генерируется только при создании enriched модели после первого API-запроса.
 - Сгенерированный URL сохраняется в MMKV вместе с моделью.
 - UI никогда не вызывает FakerJS напрямую.
 - Повторное открытие приложения не должно менять URL изображений.
 
 ## Сортировка избранных
+
 Selector возвращает новый массив:
+
 1. избранные посты первыми;
 2. внутри групп сохраняется исходный порядок списка из API;
 3. `favoriteIds` используется только для проверки статуса, не как источник порядка.
 
 Пример правила:
+
 ```ts
 const sortedPosts = [...posts].sort((a, b) => {
   const aFav = favoriteIds.includes(a.id);
@@ -93,6 +107,7 @@ const sortedPosts = [...posts].sort((a, b) => {
 ```
 
 ## Loading/error/empty state
+
 - `posts.length === 0 && !isPostsLoading && !postsError` — empty state.
 - Ошибка загрузки списка не должна очищать уже сохранённый cache.
 - Ошибка details для одного поста не должна ломать список.

@@ -19,7 +19,7 @@ export class ApiResponseValidationError extends Error {
   }
 }
 
-export async function fetchPosts(): Promise<ApiPost[]> {
+async function fetchPosts(): Promise<ApiPost[]> {
   logger.info('posts:fetch:start');
 
   const response = await requestJson(POSTS_API_BASE_URL);
@@ -34,7 +34,7 @@ export async function fetchPosts(): Promise<ApiPost[]> {
   return response;
 }
 
-export async function fetchPostDetails(id: number): Promise<ApiPost> {
+async function fetchPostDetails(id: number): Promise<ApiPost> {
   const endpoint = `${POSTS_API_BASE_URL}/${id}`;
 
   logger.info('details:fetch:start', { id });

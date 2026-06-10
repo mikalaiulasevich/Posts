@@ -7,7 +7,6 @@
 - React Native `0.86`
 - TypeScript strict
 - React Navigation native stack
-- FastImage
 - Zustand
 - MMKV
 - FakerJS
@@ -31,7 +30,6 @@
 - При наличии cache повторный API-запрос не выполняется.
 - FakerJS-картинки генерируются только на первом enrichment и затем читаются из cache.
 - В ключевых слоях добавлены безопасные diagnostic logs с префиксом `PostsApp`.
-- В header есть кнопка `Clear cache` для полной очистки MMKV и перегенерации URL картинок.
 
 ## Архитектура
 
@@ -65,31 +63,26 @@ UI не содержит сетевой логики, прямой работы 
 - При cache hit API и FakerJS enrichment не вызываются.
 - При первом parallel cache miss используется in-flight dedupe, чтобы не запускать повторный API/FakerJS flow.
 - При повреждённом MMKV JSON cache ключ удаляется и выполняется controlled refetch.
-- URL картинок создаются через `faker.image.personPortrait(...)` и получают query-параметр `cacheBust`, чтобы React Native не переиспользовал старую закешированную картинку после очистки.
+- URL картинок создаются через FakerJS: `faker.image.personPortrait({ size: 32 })` для списка и `faker.image.url({ width: 300, height: 300 })` для деталей. К URL добавляется `cacheBust`, чтобы каждая впервые сгенерированная модель получила стабильный уникальный image URL.
 - Для сброса старых серых/неудачных image URL используются новые MMKV keys `posts:list:v3` и `posts:details:v3`.
-- Картинки рендерятся через `react-native-fast-image` с `priority: FastImage.priority.normal` и `cache: FastImage.cacheControl.immutable`.
-- Кнопка `Clear cache` очищает MMKV, FastImage memory/disk cache, сбрасывает store state и закрывает приложение через `BackHandler.exitApp()`. Она не запускает повторный fetch; следующий запуск будет свежим, как после установки.
+- Картинки рендерятся стандартным React Native `Image`; URL сохраняется в MMKV, поэтому FakerJS не вызывается повторно при cache hit.
 - Логи помогают проверить:
   - `request:start` / `request:success` — фактические network вызовы;
   - `cache-hit` / `cache-miss-fetch-start` — cache behavior;
   - `list-image:generate` / `details-image:generate` — моменты генерации FakerJS;
   - `favorites:set` / `favorites:get:restored` — persistence избранного.
-- Логи видны в Metro terminal / React Native DevTools / Xcode или Android Logcat как строки с префиксом `[PostsApp:...]`.
-- Если нужно временно отключить diagnostic logs, установите `globalThis.POSTS_APP_LOGS_DISABLED = true`.
+- В debug-режиме логи видны в Metro terminal / React Native DevTools / Xcode или Android Logcat как строки с префиксом `[PostsApp:...]`.
+- В production-like runtime (`globalThis.__DEV__ === false`) logger автоматически молчит. Если нужно временно отключить diagnostic logs в debug, установите `globalThis.POSTS_APP_LOGS_DISABLED = true`.
 
 ## Установка
 
 ```sh
-npm install
+npm run setup
 ```
 
 ## Запуск
 
-Metro:
-
-```sh
-npm start
-```
+Вторая команда после установки — запуск нужной платформы:
 
 Android:
 
@@ -103,13 +96,10 @@ iOS:
 npm run ios
 ```
 
-Для iOS при первом запуске установите pods:
+Metro отдельно нужен только если вы хотите запустить bundler вручную:
 
 ```sh
-cd ios
-bundle install
-bundle exec pod install
-cd ..
+npm start
 ```
 
 ## Проверки

@@ -8,7 +8,7 @@ import type { ApiPost, PostDetails, PostListItem } from './types';
 
 const logger = createLogger('PostFactories');
 
-export function createPostListItem(apiPost: ApiPost): PostListItem {
+function createPostListItem(apiPost: ApiPost): PostListItem {
   logger.info('list-item:enrich', { id: apiPost.id });
 
   return {

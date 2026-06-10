@@ -65,11 +65,6 @@ export class FavoritesRepository {
     this.storage.setJson(STORAGE_KEYS.favorites, normalizedFavoriteIds);
     logger.info('favorites:set', { count: normalizedFavoriteIds.length });
   }
-
-  clear(): void {
-    this.storage.remove(STORAGE_KEYS.favorites);
-    logger.info('favorites:clear');
-  }
 }
 
 function normalizeFavoriteIds(value: unknown[]): number[] {
