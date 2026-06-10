@@ -74,7 +74,7 @@
 Добавлен helper `configureFavoriteLayoutAnimation()`:
 
 - использует `LayoutAnimation.configureNext`;
-- на Android включает `UIManager.setLayoutAnimationEnabledExperimental?.(true)` один раз;
+- не вызывает `UIManager.setLayoutAnimationEnabledExperimental`, потому что в React Native New Architecture этот вызов является no-op и даёт warning на Android;
 - анимирует `create`, `update`, `delete` через `easeInEaseOut`, `duration: 220`.
 
 Где вызывается:
@@ -172,6 +172,7 @@
    - ripple/scale не ломают layout.
 3. Toggle favorite:
    - `LayoutAnimation` не вызывает warning/crash.
+   - В логах нет warning `setLayoutAnimationEnabledExperimental is currently a no-op in the New Architecture`.
    - после возврата на список старый порядок кратко виден, затем список мягко применяет новый порядок.
    - итоговый порядок списка корректный.
 4. Loading/Error/Empty:

@@ -1,10 +1,6 @@
-import { LayoutAnimation, Platform, UIManager } from 'react-native';
-
-let isAndroidLayoutAnimationEnabled = false;
+import { LayoutAnimation } from 'react-native';
 
 export function configureFavoriteLayoutAnimation(): void {
-  enableAndroidLayoutAnimationIfNeeded();
-
   LayoutAnimation.configureNext({
     create: {
       property: LayoutAnimation.Properties.opacity,
@@ -19,13 +15,4 @@ export function configureFavoriteLayoutAnimation(): void {
       type: LayoutAnimation.Types.easeInEaseOut,
     },
   });
-}
-
-function enableAndroidLayoutAnimationIfNeeded(): void {
-  if (Platform.OS !== 'android' || isAndroidLayoutAnimationEnabled) {
-    return;
-  }
-
-  UIManager.setLayoutAnimationEnabledExperimental?.(true);
-  isAndroidLayoutAnimationEnabled = true;
 }

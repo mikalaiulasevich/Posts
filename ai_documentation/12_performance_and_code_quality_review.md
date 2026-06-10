@@ -77,7 +77,7 @@
 7. В `loadPosts` добавлен memory-cache guard: если posts уже в Zustand state, повторный repository/MMKV flow не запускается.
 8. `useAppTheme` и `Application` мемоизируют theme object по `colorScheme`.
 9. Убран render-time diagnostic log из selector/helper сортировки; cache/API/FakerJS логи сохранены.
-10. В `httpClient` добавлен безопасный timeout через стандартный `AbortController`, чтобы зависший network request не держал UI в loading бесконечно.
+10. Сетевой `fetch` оставлен нативным без `AbortController`/timeout-wrapper: Android runtime-проверка показала, что проблема была во внешнем VPN/network окружении телефона, а не в API или data layer.
 
 ## Что оставлено без изменений и почему
 
