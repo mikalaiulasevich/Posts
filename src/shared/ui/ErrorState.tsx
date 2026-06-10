@@ -1,13 +1,8 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-import {
-  createAndroidRipple,
-  minimumHitSlop,
-  radius,
-  spacing,
-  typography,
-} from './theme/tokens';
+import { UiButton, UiCard, UiScreen, UiText } from './primitives';
+import { radius, size, spacing } from './theme/tokens';
 import { useAppTheme } from './theme/useAppTheme';
 
 type ErrorStateProps = {
@@ -22,18 +17,8 @@ export function ErrorState({
   const theme = useAppTheme();
 
   return (
-    <View
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
-    >
-      <View
-        style={[
-          styles.card,
-          {
-            backgroundColor: theme.colors.surface,
-            borderColor: theme.colors.border,
-          },
-        ]}
-      >
+    <UiScreen centered padding="xxl">
+      <UiCard centered maxWidth={360}>
         <View
           accessibilityElementsHidden
           importantForAccessibility="no"
@@ -42,88 +27,48 @@ export function ErrorState({
             { backgroundColor: theme.colors.dangerBackground },
           ]}
         >
-          <Text style={[styles.icon, { color: theme.colors.danger }]}>!</Text>
+          <UiText color="danger" variant="icon">
+            !
+          </UiText>
         </View>
-        <Text style={[styles.title, { color: theme.colors.danger }]}>
+        <UiText align="center" color="danger" variant="subtitle">
           Something went wrong
-        </Text>
-        <Text style={[styles.message, { color: theme.colors.textSecondary }]}>
+        </UiText>
+        <UiText
+          align="center"
+          color="textSecondary"
+          style={styles.message}
+          variant="body"
+        >
           {message}
-        </Text>
+        </UiText>
         {onRetry != null ? (
-          <Pressable
+          <UiButton
             accessibilityLabel="Try loading the content again"
-            accessibilityRole="button"
-            android_ripple={createAndroidRipple(theme)}
-            hitSlop={minimumHitSlop}
+            label="Try again"
             onPress={onRetry}
-            style={({ pressed }) => [
-              styles.button,
-              {
-                backgroundColor: theme.colors.accent,
-              },
-              pressed && styles.pressed,
-            ]}
-          >
-            <Text style={styles.buttonText}>Try again</Text>
-          </Pressable>
+            style={styles.button}
+          />
         ) : null}
-      </View>
-    </View>
+      </UiCard>
+    </UiScreen>
   );
 }
 
 const styles = StyleSheet.create({
   button: {
-    alignItems: 'center',
-    borderRadius: radius.md,
-    minHeight: 48,
-    minWidth: 132,
-    justifyContent: 'center',
     marginTop: spacing.lg,
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.md,
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    ...typography.caption,
-  },
-  card: {
-    alignItems: 'center',
-    borderRadius: radius.xl,
-    borderWidth: StyleSheet.hairlineWidth,
-    maxWidth: 360,
-    padding: spacing.xxl,
-  },
-  container: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-    padding: spacing.xxl,
-  },
-  icon: {
-    fontSize: 20,
-    fontWeight: '900',
-    lineHeight: 24,
+    minWidth: 132,
   },
   iconContainer: {
     alignItems: 'center',
     borderRadius: radius.pill,
-    height: 42,
+    height: size.stateIcon,
     justifyContent: 'center',
     marginBottom: spacing.md,
-    width: 42,
+    width: size.stateIcon,
   },
   message: {
-    ...typography.body,
     marginTop: spacing.sm,
-    textAlign: 'center',
-  },
-  pressed: {
-    opacity: 0.78,
-  },
-  title: {
-    ...typography.subtitle,
-    textAlign: 'center',
   },
 });

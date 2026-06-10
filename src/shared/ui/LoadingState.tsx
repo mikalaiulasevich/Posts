@@ -1,7 +1,8 @@
 import React from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet } from 'react-native';
 
-import { spacing, typography } from './theme/tokens';
+import { UiCard, UiScreen, UiText } from './primitives';
+import { spacing } from './theme/tokens';
 import { useAppTheme } from './theme/useAppTheme';
 
 type LoadingStateProps = {
@@ -14,47 +15,25 @@ export function LoadingState({
   const theme = useAppTheme();
 
   return (
-    <View
-      accessibilityRole="progressbar"
+    <UiScreen
       accessibilityLabel={label}
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      accessibilityRole="progressbar"
+      centered
+      padding="xxl"
     >
-      <View
-        style={[
-          styles.card,
-          {
-            backgroundColor: theme.colors.surface,
-            borderColor: theme.colors.border,
-          },
-        ]}
-      >
+      <UiCard centered maxWidth={360} style={styles.card}>
         <ActivityIndicator color={theme.colors.accent} size="large" />
-        <Text style={[styles.label, { color: theme.colors.textSecondary }]}>
+        <UiText align="center" color="textSecondary" variant="caption">
           {label}
-        </Text>
-      </View>
-    </View>
+        </UiText>
+      </UiCard>
+    </UiScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-    padding: spacing.xxl,
-  },
   card: {
-    alignItems: 'center',
-    borderRadius: 20,
-    borderWidth: StyleSheet.hairlineWidth,
     gap: spacing.md,
     minWidth: 180,
-    paddingHorizontal: spacing.xxl,
-    paddingVertical: spacing.xxl,
-  },
-  label: {
-    ...typography.caption,
-    textAlign: 'center',
   },
 });

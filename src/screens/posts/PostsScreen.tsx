@@ -1,16 +1,15 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, Platform, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { PostListItem as PostListItemModel } from '../../entities/post/types';
 import type { RootStackParamList } from '../../navigation/types';
+import { createLogger } from '../../shared/lib/logger';
 import { EmptyState } from '../../shared/ui/EmptyState';
 import { ErrorState } from '../../shared/ui/ErrorState';
 import { LoadingState } from '../../shared/ui/LoadingState';
-import { createLogger } from '../../shared/lib/logger';
+import { UiScreen } from '../../shared/ui/primitives';
 import { spacing } from '../../shared/ui/theme/tokens';
-import { useAppTheme } from '../../shared/ui/theme/useAppTheme';
 import {
   selectFavoriteIds,
   selectIsPostsLoading,
@@ -29,7 +28,6 @@ type PostsScreenProps = NativeStackScreenProps<RootStackParamList, 'Posts'>;
 export function PostsScreen({
   navigation,
 }: PostsScreenProps): React.JSX.Element {
-  const theme = useAppTheme();
   const posts = usePostsStore(selectPosts);
   const favoriteIds = usePostsStore(selectFavoriteIds);
   const isLoading = usePostsStore(selectIsPostsLoading);
@@ -88,15 +86,9 @@ export function PostsScreen({
   }
 
   return (
-    <SafeAreaView
-      edges={['bottom']}
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
-    >
+    <UiScreen>
       <FlatList
-        contentContainerStyle={[
-          styles.content,
-          { backgroundColor: theme.colors.background },
-        ]}
+        contentContainerStyle={styles.content}
         data={sortedPosts}
         initialNumToRender={12}
         keyExtractor={item => String(item.id)}
@@ -109,7 +101,7 @@ export function PostsScreen({
         updateCellsBatchingPeriod={40}
         windowSize={7}
       />
-    </SafeAreaView>
+    </UiScreen>
   );
 }
 
@@ -122,9 +114,6 @@ function Footer(): React.JSX.Element {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   content: {
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.lg,

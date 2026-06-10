@@ -42,6 +42,16 @@ export const radius = {
   pill: 999,
 } as const;
 
+export const size = {
+  detailsImageMax: 300,
+  detailsImageMin: 160,
+  favoriteButtonMinHeight: 52,
+  listItemMinHeight: 72,
+  stateIcon: 42,
+  thumbnail: 32,
+  touchTarget: 48,
+} as const;
+
 export const typography = {
   title: {
     fontSize: 26,
@@ -68,6 +78,21 @@ export const typography = {
     fontWeight: '600',
     lineHeight: 18,
   },
+  badge: {
+    fontSize: 12,
+    fontWeight: '700',
+    lineHeight: 14,
+  },
+  icon: {
+    fontSize: 20,
+    fontWeight: '900',
+    lineHeight: 24,
+  },
+  iconLarge: {
+    fontSize: 34,
+    fontWeight: '900',
+    lineHeight: 36,
+  },
 } as const;
 
 const lightColors = {
@@ -84,6 +109,7 @@ const lightColors = {
   favoriteBorder: palette.amber300,
   favoriteIcon: palette.amber500,
   muted: palette.slate500,
+  onAccent: palette.white,
   pressedSurface: palette.slate100,
   surface: palette.white,
   surfaceAlt: palette.slate100,
@@ -106,6 +132,7 @@ const darkColors = {
   favoriteBorder: '#92400E',
   favoriteIcon: '#FBBF24',
   muted: '#94A3B8',
+  onAccent: palette.white,
   pressedSurface: '#111827',
   surface: '#0F172A',
   surfaceAlt: '#111827',
@@ -121,6 +148,10 @@ export type AppTheme = {
   colors: AppColors;
   isDark: boolean;
 };
+
+export type AppColorToken = keyof AppColors;
+export type AppSpacingToken = keyof typeof spacing;
+export type AppTypographyToken = keyof typeof typography;
 
 export function getAppTheme(colorScheme: ColorSchemeName): AppTheme {
   const normalizedScheme: AppColorScheme =

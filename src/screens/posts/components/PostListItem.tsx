@@ -1,13 +1,12 @@
 import React, { memo, useCallback } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 
 import type { PostListItem as PostListItemModel } from '../../../entities/post/types';
 import { createLogger } from '../../../shared/lib/logger';
+import { UiCard, UiPressable, UiText } from '../../../shared/ui/primitives';
 import {
-  createAndroidRipple,
-  createCardShadow,
-  minimumHitSlop,
   radius,
+  size,
   spacing,
   typography,
 } from '../../../shared/ui/theme/tokens';
@@ -33,102 +32,89 @@ function PostListItemComponent({
   }, [onPress, post.id]);
 
   return (
-    <Pressable
-      accessibilityLabel={`${isFavorite ? 'Favorite post' : 'Post'} ${post.id}. ${post.title}`}
-      accessibilityRole="button"
-      accessibilityState={{ selected: isFavorite }}
-      android_ripple={createAndroidRipple(theme)}
-      hitSlop={minimumHitSlop}
-      onPress={handlePress}
-      style={({ pressed }) => [
-        styles.container,
-        createCardShadow(theme),
-        {
-          backgroundColor: theme.colors.surface,
-          borderColor: theme.colors.border,
-        },
-        isFavorite && {
-          backgroundColor: theme.colors.favoriteBackground,
-          borderColor: theme.colors.favoriteBorder,
-        },
-        pressed && styles.pressed,
-      ]}
+    <UiCard
+      background={isFavorite ? 'favoriteBackground' : 'surface'}
+      border={isFavorite ? 'favoriteBorder' : 'border'}
+      padding={false}
+      shadow
+      style={styles.card}
     >
-      <Image
-        accessibilityIgnoresInvertColors
-        accessibilityLabel={`Thumbnail for post ${post.id}`}
-        onError={() => logger.error('thumbnail:error', { id: post.id })}
-        onLoad={() => logger.info('thumbnail:loaded', { id: post.id })}
-        resizeMode="cover"
-        source={{ uri: post.thumbnailUrl }}
-        style={[
-          styles.thumbnail,
-          {
-            backgroundColor: theme.colors.surfaceAlt,
-            borderColor: isFavorite
-              ? theme.colors.favoriteBorder
-              : theme.colors.border,
-          },
-        ]}
-      />
-      <View style={styles.content}>
-        <View style={styles.titleRow}>
-          <Text
-            numberOfLines={2}
-            style={[styles.title, { color: theme.colors.textPrimary }]}
-          >
-            {post.title}
-          </Text>
-          {isFavorite ? (
-            <View
-              accessibilityElementsHidden
-              importantForAccessibility="no"
-              style={[
-                styles.favoriteBadge,
-                {
-                  backgroundColor: theme.colors.surface,
-                  borderColor: theme.colors.favoriteBorder,
-                },
-              ]}
+      <UiPressable
+        accessibilityLabel={`${isFavorite ? 'Favorite post' : 'Post'} ${post.id}. ${post.title}`}
+        accessibilityState={{ selected: isFavorite }}
+        onPress={handlePress}
+        style={styles.pressable}
+      >
+        <Image
+          accessibilityElementsHidden
+          accessibilityIgnoresInvertColors
+          importantForAccessibility="no"
+          onError={() => logger.error('thumbnail:error', { id: post.id })}
+          onLoad={() => logger.info('thumbnail:loaded', { id: post.id })}
+          resizeMode="cover"
+          source={{ uri: post.thumbnailUrl }}
+          style={[
+            styles.thumbnail,
+            {
+              backgroundColor: theme.colors.surfaceAlt,
+              borderColor: isFavorite
+                ? theme.colors.favoriteBorder
+                : theme.colors.border,
+            },
+          ]}
+        />
+        <View style={styles.content}>
+          <View style={styles.titleRow}>
+            <UiText
+              numberOfLines={2}
+              style={styles.title}
+              transform="capitalize"
+              variant="bodyStrong"
             >
-              <Text
-                style={[styles.favoriteIcon, { color: theme.colors.favorite }]}
+              {post.title}
+            </UiText>
+            {isFavorite ? (
+              <View
+                accessibilityElementsHidden
+                importantForAccessibility="no"
+                style={[
+                  styles.favoriteBadge,
+                  {
+                    backgroundColor: theme.colors.surface,
+                    borderColor: theme.colors.favoriteBorder,
+                  },
+                ]}
               >
-                ★
-              </Text>
-              <Text
-                style={[styles.favoriteText, { color: theme.colors.favorite }]}
-              >
-                Favorite
-              </Text>
-            </View>
-          ) : null}
+                <UiText color="favorite" variant="badge">
+                  ★
+                </UiText>
+                <UiText color="favorite" variant="badge">
+                  Favorite
+                </UiText>
+              </View>
+            ) : null}
+          </View>
+          <UiText
+            color="textSecondary"
+            numberOfLines={2}
+            style={styles.body}
+            variant="caption"
+          >
+            {post.body}
+          </UiText>
         </View>
-        <Text
-          numberOfLines={2}
-          style={[styles.body, { color: theme.colors.textSecondary }]}
-        >
-          {post.body}
-        </Text>
-      </View>
-    </Pressable>
+      </UiPressable>
+    </UiCard>
   );
 }
 
 const styles = StyleSheet.create({
   body: {
-    ...typography.caption,
-    fontWeight: '500',
+    fontWeight: typography.caption.fontWeight,
     marginTop: spacing.xs,
   },
-  container: {
-    alignItems: 'center',
+  card: {
     borderRadius: radius.lg,
-    borderWidth: 1,
-    flexDirection: 'row',
-    gap: spacing.md,
-    minHeight: 72,
-    padding: spacing.md,
   },
   content: {
     flex: 1,
@@ -143,29 +129,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
   },
-  favoriteIcon: {
-    fontSize: 12,
-    fontWeight: '900',
-    lineHeight: 14,
-  },
-  favoriteText: {
-    ...typography.caption,
-    fontSize: 12,
-    lineHeight: 14,
-  },
-  pressed: {
-    opacity: 0.78,
+  pressable: {
+    alignItems: 'center',
+    borderRadius: radius.lg,
+    flexDirection: 'row',
+    gap: spacing.md,
+    minHeight: size.listItemMinHeight,
+    overflow: 'hidden',
+    padding: spacing.md,
   },
   thumbnail: {
     borderRadius: radius.md,
     borderWidth: StyleSheet.hairlineWidth,
-    height: 32,
-    width: 32,
+    height: size.thumbnail,
+    width: size.thumbnail,
   },
   title: {
-    ...typography.bodyStrong,
     flex: 1,
-    textTransform: 'capitalize',
   },
   titleRow: {
     alignItems: 'center',
