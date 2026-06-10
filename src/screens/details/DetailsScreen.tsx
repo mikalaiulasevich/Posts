@@ -11,11 +11,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import type { RootStackParamList } from '../../navigation/types';
 import { createLogger } from '../../shared/lib/logger';
-import {
-  FadeInView,
-  configureFavoriteLayoutAnimation,
-  usePulseOnChange,
-} from '../../shared/ui/animations';
+import { FadeInView, usePulseOnChange } from '../../shared/ui/animations';
 import { ErrorState } from '../../shared/ui/ErrorState';
 import { LoadingState } from '../../shared/ui/LoadingState';
 import { UiButton, UiCard, UiScreen, UiText } from '../../shared/ui/primitives';
@@ -60,7 +56,6 @@ export function DetailsScreen({
 
   const handleToggleFavorite = useCallback(() => {
     logger.info('toggleFavorite:press', { id: postId });
-    configureFavoriteLayoutAnimation();
     toggleFavorite(postId);
   }, [postId, toggleFavorite]);
   const imageSize = Math.min(

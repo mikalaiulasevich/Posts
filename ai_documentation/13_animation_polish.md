@@ -69,7 +69,7 @@
 Файлы:
 
 - `src/shared/ui/animations/layoutAnimation.ts`
-- `src/screens/details/DetailsScreen.tsx`
+- `src/screens/posts/PostsScreen.tsx`
 
 Добавлен helper `configureFavoriteLayoutAnimation()`:
 
@@ -79,12 +79,16 @@
 
 Где вызывается:
 
-- перед `toggleFavorite` на `DetailsScreen`, чтобы `LayoutAnimation.configureNext` был запланирован до синхронного изменения favorite state.
+- на focus `PostsScreen`, после короткой задержки, чтобы старый порядок успел отрисоваться при возврате;
+- прямо перед локальным применением нового visible favorite-order state, чтобы `LayoutAnimation.configureNext` был запланирован до layout update списка;
+- дополнительно запускается лёгкий list-level `Animated` settle (`opacity` + `translateY`), чтобы эффект был видим даже если `FlatList` на конкретной платформе не показывает перемещение строк достаточно явно.
 
 Почему это уместно:
 
 - изменение порядка избранных — редкое пользовательское действие;
-- `LayoutAnimation.configureNext` вызывается до mutation, а не post-commit;
+- global favorite state и persistence обновляются сразу на `DetailsScreen`;
+- visible order списка отложен до focus `PostsScreen`, поэтому reorder можно увидеть при возврате;
+- `LayoutAnimation.configureNext` вызывается до локального layout update, а не post-commit;
 - `LayoutAnimation` не требует ручной анимации каждого элемента списка;
 - код остаётся коротким и не добавляет external animation runtime.
 
@@ -101,7 +105,8 @@
 - staggered fade-in для meta/title;
 - staggered fade-in для body;
 - fade-in для favorite button;
-- короткий pulse scale кнопки при изменении favorite state.
+- короткий pulse scale кнопки при изменении favorite state;
+- сам toggle favorite остаётся мгновенным для business state/persistence, а порядок списка применяется при возвращении на `PostsScreen`.
 
 `usePulseOnChange` использует:
 
@@ -128,9 +133,9 @@
 ## Где используется `LayoutAnimation`
 
 - `configureFavoriteLayoutAnimation()` в `src/shared/ui/animations/layoutAnimation.ts`.
-- Вызов перед `toggleFavorite` на `DetailsScreen`.
+- Вызов в `PostsScreen` перед применением deferred visible favorite order.
 
-`LayoutAnimation` выбран для reorder-flow, потому что он проще и легче, чем ручная анимация каждой строки `FlatList`.
+`LayoutAnimation` выбран для reorder-flow, потому что он проще и легче, чем ручная анимация каждой строки `FlatList`. Короткая задержка после focus нужна, чтобы старый порядок успел появиться на экране, а затем новый порядок применился заметно.
 
 ## Какие анимации специально не добавлялись
 
@@ -167,7 +172,8 @@
    - ripple/scale не ломают layout.
 3. Toggle favorite:
    - `LayoutAnimation` не вызывает warning/crash.
-   - порядок списка после возврата корректный.
+   - после возврата на список старый порядок кратко виден, затем список мягко применяет новый порядок.
+   - итоговый порядок списка корректный.
 4. Loading/Error/Empty:
    - fade-in работает плавно.
 5. Производительность:
