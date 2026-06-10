@@ -1,6 +1,7 @@
 import React from 'react';
 import { ActivityIndicator, StyleSheet } from 'react-native';
 
+import { FadeInView } from './animations';
 import { UiCard, UiScreen, UiText } from './primitives';
 import { spacing } from './theme/tokens';
 import { useAppTheme } from './theme/useAppTheme';
@@ -21,12 +22,14 @@ export function LoadingState({
       centered
       padding="xxl"
     >
-      <UiCard centered maxWidth={360} style={styles.card}>
-        <ActivityIndicator color={theme.colors.accent} size="large" />
-        <UiText align="center" color="textSecondary" variant="caption">
-          {label}
-        </UiText>
-      </UiCard>
+      <FadeInView>
+        <UiCard centered maxWidth={360} style={styles.card}>
+          <ActivityIndicator color={theme.colors.accent} size="large" />
+          <UiText align="center" color="textSecondary" variant="caption">
+            {label}
+          </UiText>
+        </UiCard>
+      </FadeInView>
     </UiScreen>
   );
 }

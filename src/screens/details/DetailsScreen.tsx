@@ -1,15 +1,21 @@
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
+  Animated,
   Image,
   ScrollView,
   StyleSheet,
   View,
   useWindowDimensions,
 } from 'react-native';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import type { RootStackParamList } from '../../navigation/types';
 import { createLogger } from '../../shared/lib/logger';
+import {
+  FadeInView,
+  configureFavoriteLayoutAnimation,
+  usePulseOnChange,
+} from '../../shared/ui/animations';
 import { ErrorState } from '../../shared/ui/ErrorState';
 import { LoadingState } from '../../shared/ui/LoadingState';
 import { UiButton, UiCard, UiScreen, UiText } from '../../shared/ui/primitives';
@@ -40,6 +46,7 @@ export function DetailsScreen({
   const loadPostDetails = usePostsStore(state => state.loadPostDetails);
   const toggleFavorite = usePostsStore(state => state.toggleFavorite);
   const [hasRequestedDetails, setHasRequestedDetails] = useState(false);
+  const favoritePulseStyle = usePulseOnChange(isFavorite);
 
   const requestDetails = useCallback(() => {
     setHasRequestedDetails(true);
@@ -53,6 +60,7 @@ export function DetailsScreen({
 
   const handleToggleFavorite = useCallback(() => {
     logger.info('toggleFavorite:press', { id: postId });
+    configureFavoriteLayoutAnimation();
     toggleFavorite(postId);
   }, [postId, toggleFavorite]);
   const imageSize = Math.min(
@@ -83,58 +91,69 @@ export function DetailsScreen({
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        <Image
-          accessibilityIgnoresInvertColors
-          accessibilityLabel={`Image for post ${details.id}`}
-          onError={() => logger.error('image:error', { id: details.id })}
-          onLoad={() => logger.info('image:loaded', { id: details.id })}
-          resizeMode="cover"
-          source={{ uri: details.imageUrl }}
-          style={[
-            styles.image,
-            {
-              backgroundColor: theme.colors.surfaceAlt,
-              height: imageSize,
-              width: imageSize,
-            },
-          ]}
-        />
-        <UiCard shadow style={styles.card}>
-          <View style={styles.metaRow}>
-            <UiText
-              color="textTertiary"
-              transform="uppercase"
-              variant="caption"
-            >
-              Post #{details.id}
-            </UiText>
-            <UiText
-              color="textTertiary"
-              transform="uppercase"
-              variant="caption"
-            >
-              User {details.userId}
-            </UiText>
-          </View>
-          <UiText transform="capitalize" variant="title">
-            {details.title}
-          </UiText>
-          <UiText color="textSecondary" style={styles.body} variant="body">
-            {details.body}
-          </UiText>
-          <UiButton
-            accessibilityLabel={
-              isFavorite
-                ? `Remove post ${details.id} from favorites`
-                : `Add post ${details.id} to favorites`
-            }
-            accessibilityState={{ checked: isFavorite }}
-            icon={isFavorite ? '★' : '☆'}
-            label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-            onPress={handleToggleFavorite}
-            style={styles.favoriteButton}
-            variant={isFavorite ? 'favorite' : 'primary'}
+        <FadeInView>
+          <Image
+            accessibilityIgnoresInvertColors
+            accessibilityLabel={`Image for post ${details.id}`}
+            onError={() => logger.error('image:error', { id: details.id })}
+            onLoad={() => logger.info('image:loaded', { id: details.id })}
+            resizeMode="cover"
+            source={{ uri: details.imageUrl }}
+            style={[
+              styles.image,
+              {
+                backgroundColor: theme.colors.surfaceAlt,
+                height: imageSize,
+                width: imageSize,
+              },
+            ]}
           />
+        </FadeInView>
+        <UiCard shadow style={styles.card}>
+          <FadeInView delay={80}>
+            <View style={styles.metaRow}>
+              <UiText
+                color="textTertiary"
+                transform="uppercase"
+                variant="caption"
+              >
+                Post #{details.id}
+              </UiText>
+              <UiText
+                color="textTertiary"
+                transform="uppercase"
+                variant="caption"
+              >
+                User {details.userId}
+              </UiText>
+            </View>
+            <UiText transform="capitalize" variant="title">
+              {details.title}
+            </UiText>
+          </FadeInView>
+          <FadeInView delay={140}>
+            <UiText color="textSecondary" style={styles.body} variant="body">
+              {details.body}
+            </UiText>
+          </FadeInView>
+          <FadeInView delay={200} style={styles.favoriteButton}>
+            <Animated.View style={favoritePulseStyle}>
+              <UiButton
+                accessibilityLabel={
+                  isFavorite
+                    ? `Remove post ${details.id} from favorites`
+                    : `Add post ${details.id} to favorites`
+                }
+                accessibilityState={{ checked: isFavorite }}
+                icon={isFavorite ? '★' : '☆'}
+                label={
+                  isFavorite ? 'Remove from favorites' : 'Add to favorites'
+                }
+                onPress={handleToggleFavorite}
+                variant={isFavorite ? 'favorite' : 'primary'}
+              />
+            </Animated.View>
+          </FadeInView>
         </UiCard>
       </ScrollView>
     </UiScreen>

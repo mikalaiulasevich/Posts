@@ -16,6 +16,7 @@ type ThemedPressableState = PressableStateCallbackType;
 
 type UiPressableProps = Omit<PressableProps, 'style'> & {
   pressedOpacity?: boolean;
+  pressedScale?: number;
   style?:
     | StyleProp<ViewStyle>
     | ((state: ThemedPressableState) => StyleProp<ViewStyle>);
@@ -26,6 +27,7 @@ export function UiPressable({
   android_ripple,
   hitSlop = minimumHitSlop,
   pressedOpacity = true,
+  pressedScale,
   style,
   ...props
 }: UiPressableProps): React.JSX.Element {
@@ -39,6 +41,9 @@ export function UiPressable({
       {...props}
       style={state => [
         typeof style === 'function' ? style(state) : style,
+        pressedScale != null &&
+          state.pressed &&
+          createPressedScaleStyle(pressedScale),
         pressedOpacity &&
           Platform.OS !== 'android' &&
           state.pressed &&
@@ -53,3 +58,9 @@ const styles = StyleSheet.create({
     opacity: 0.78,
   },
 });
+
+function createPressedScaleStyle(scale: number): ViewStyle {
+  return {
+    transform: [{ scale }],
+  };
+}

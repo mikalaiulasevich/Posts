@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 
+import { FadeInView } from './animations';
 import { UiCard, UiScreen, UiText } from './primitives';
 import { spacing } from './theme/tokens';
 
@@ -15,28 +16,30 @@ export function EmptyState({
 }: EmptyStateProps): React.JSX.Element {
   return (
     <UiScreen centered padding="xxl">
-      <UiCard centered maxWidth={360}>
-        <UiText
-          accessibilityElementsHidden
-          color="textTertiary"
-          importantForAccessibility="no"
-          style={styles.icon}
-          variant="iconLarge"
-        >
-          •
-        </UiText>
-        <UiText align="center" variant="subtitle">
-          {title}
-        </UiText>
-        <UiText
-          align="center"
-          color="textSecondary"
-          style={styles.message}
-          variant="body"
-        >
-          {message}
-        </UiText>
-      </UiCard>
+      <FadeInView>
+        <UiCard centered maxWidth={360}>
+          <UiText
+            accessibilityElementsHidden
+            color="textTertiary"
+            importantForAccessibility="no"
+            style={styles.icon}
+            variant="iconLarge"
+          >
+            •
+          </UiText>
+          <UiText align="center" variant="subtitle">
+            {title}
+          </UiText>
+          <UiText
+            align="center"
+            color="textSecondary"
+            style={styles.message}
+            variant="body"
+          >
+            {message}
+          </UiText>
+        </UiCard>
+      </FadeInView>
     </UiScreen>
   );
 }

@@ -1,8 +1,9 @@
 import React, { memo, useCallback } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, Platform, StyleSheet, View } from 'react-native';
 
 import type { PostListItem as PostListItemModel } from '../../../entities/post/types';
 import { createLogger } from '../../../shared/lib/logger';
+import { FadeInView } from '../../../shared/ui/animations';
 import { UiCard, UiPressable, UiText } from '../../../shared/ui/primitives';
 import {
   radius,
@@ -43,6 +44,7 @@ function PostListItemComponent({
         accessibilityLabel={`${isFavorite ? 'Favorite post' : 'Post'} ${post.id}. ${post.title}`}
         accessibilityState={{ selected: isFavorite }}
         onPress={handlePress}
+        pressedScale={Platform.OS === 'ios' ? 0.985 : undefined}
         style={styles.pressable}
       >
         <Image
@@ -74,24 +76,10 @@ function PostListItemComponent({
               {post.title}
             </UiText>
             {isFavorite ? (
-              <View
-                accessibilityElementsHidden
-                importantForAccessibility="no"
-                style={[
-                  styles.favoriteBadge,
-                  {
-                    backgroundColor: theme.colors.surface,
-                    borderColor: theme.colors.favoriteBorder,
-                  },
-                ]}
-              >
-                <UiText color="favorite" variant="badge">
-                  ★
-                </UiText>
-                <UiText color="favorite" variant="badge">
-                  Favorite
-                </UiText>
-              </View>
+              <FavoriteBadge
+                backgroundColor={theme.colors.surface}
+                borderColor={theme.colors.favoriteBorder}
+              />
             ) : null}
           </View>
           <UiText
@@ -105,6 +93,40 @@ function PostListItemComponent({
         </View>
       </UiPressable>
     </UiCard>
+  );
+}
+
+type FavoriteBadgeProps = {
+  backgroundColor: string;
+  borderColor: string;
+};
+
+function FavoriteBadge({
+  backgroundColor,
+  borderColor,
+}: FavoriteBadgeProps): React.JSX.Element {
+  return (
+    <FadeInView
+      accessibilityElementsHidden
+      distance={0}
+      duration={180}
+      importantForAccessibility="no"
+      initialScale={0.92}
+      style={[
+        styles.favoriteBadge,
+        {
+          backgroundColor,
+          borderColor,
+        },
+      ]}
+    >
+      <UiText color="favorite" variant="badge">
+        ★
+      </UiText>
+      <UiText color="favorite" variant="badge">
+        Favorite
+      </UiText>
+    </FadeInView>
   );
 }
 

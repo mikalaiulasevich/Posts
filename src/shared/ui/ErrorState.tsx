@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { FadeInView } from './animations';
 import { UiButton, UiCard, UiScreen, UiText } from './primitives';
 import { radius, size, spacing } from './theme/tokens';
 import { useAppTheme } from './theme/useAppTheme';
@@ -18,39 +19,41 @@ export function ErrorState({
 
   return (
     <UiScreen centered padding="xxl">
-      <UiCard centered maxWidth={360}>
-        <View
-          accessibilityElementsHidden
-          importantForAccessibility="no"
-          style={[
-            styles.iconContainer,
-            { backgroundColor: theme.colors.dangerBackground },
-          ]}
-        >
-          <UiText color="danger" variant="icon">
-            !
+      <FadeInView>
+        <UiCard centered maxWidth={360}>
+          <View
+            accessibilityElementsHidden
+            importantForAccessibility="no"
+            style={[
+              styles.iconContainer,
+              { backgroundColor: theme.colors.dangerBackground },
+            ]}
+          >
+            <UiText color="danger" variant="icon">
+              !
+            </UiText>
+          </View>
+          <UiText align="center" color="danger" variant="subtitle">
+            Something went wrong
           </UiText>
-        </View>
-        <UiText align="center" color="danger" variant="subtitle">
-          Something went wrong
-        </UiText>
-        <UiText
-          align="center"
-          color="textSecondary"
-          style={styles.message}
-          variant="body"
-        >
-          {message}
-        </UiText>
-        {onRetry != null ? (
-          <UiButton
-            accessibilityLabel="Try loading the content again"
-            label="Try again"
-            onPress={onRetry}
-            style={styles.button}
-          />
-        ) : null}
-      </UiCard>
+          <UiText
+            align="center"
+            color="textSecondary"
+            style={styles.message}
+            variant="body"
+          >
+            {message}
+          </UiText>
+          {onRetry != null ? (
+            <UiButton
+              accessibilityLabel="Try loading the content again"
+              label="Try again"
+              onPress={onRetry}
+              style={styles.button}
+            />
+          ) : null}
+        </UiCard>
+      </FadeInView>
     </UiScreen>
   );
 }

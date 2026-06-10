@@ -35,6 +35,7 @@ export function UiButton({
   return (
     <UiPressable
       {...props}
+      pressedScale={0.98}
       style={[
         styles.container,
         {

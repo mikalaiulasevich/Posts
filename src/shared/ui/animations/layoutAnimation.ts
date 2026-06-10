@@ -1,0 +1,31 @@
+import { LayoutAnimation, Platform, UIManager } from 'react-native';
+
+let isAndroidLayoutAnimationEnabled = false;
+
+export function configureFavoriteLayoutAnimation(): void {
+  enableAndroidLayoutAnimationIfNeeded();
+
+  LayoutAnimation.configureNext({
+    create: {
+      property: LayoutAnimation.Properties.opacity,
+      type: LayoutAnimation.Types.easeInEaseOut,
+    },
+    delete: {
+      property: LayoutAnimation.Properties.opacity,
+      type: LayoutAnimation.Types.easeInEaseOut,
+    },
+    duration: 220,
+    update: {
+      type: LayoutAnimation.Types.easeInEaseOut,
+    },
+  });
+}
+
+function enableAndroidLayoutAnimationIfNeeded(): void {
+  if (Platform.OS !== 'android' || isAndroidLayoutAnimationEnabled) {
+    return;
+  }
+
+  UIManager.setLayoutAnimationEnabledExperimental?.(true);
+  isAndroidLayoutAnimationEnabled = true;
+}
