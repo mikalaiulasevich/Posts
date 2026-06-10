@@ -140,13 +140,16 @@ npx react-native bundle \
 - `ai_documentation/06_decisions.md`
 - `ai_documentation/09_final_acceptance_checklist.md`
 - `ai_documentation/11_ui_native_polish_plan.md`
+- `ai_documentation/12_performance_and_code_quality_review.md`
+- `ai_documentation/13_animation_polish.md`
 - `ai_prompts/prompt.md`
 - `ai_prompts/task.md`
 - `ai_prompts/ai_dialog.md`
+- `ai_prompts/performance.md`
 - `ai_prompts/polishing.md`
 - `ai_prompts_screenshots/`
 
-Перед публикацией AI-доказательств нужно удалить секреты, приватные URL, персональные данные и лишние локальные пути из выгрузок чатов/скриншотов.
+Перед публикацией AI-доказательств нужно удалить секреты, приватные URL, персональные данные и лишние локальные пути из выгрузок чатов/скриншотов. В текущем состоянии выполнена базовая санитизация известных локальных путей и grep-аудит секретов; финально скриншоты всё равно стоит просмотреть вручную.
 
 ## Ограничения
 
@@ -154,4 +157,5 @@ npx react-native bundle \
 - Нет pull-to-refresh: данные должны запрашиваться один раз и затем читаться из cache.
 - Нет server sync избранного: `favoriteIds` сохраняются локально в MMKV.
 - Нет offline queue: вне объёма тестового задания.
+- Production keystore для Android release не хранится в git; для публикации нужно настроить приватную подпись отдельно.
 - Реальные Android/iOS запуски нужно подтвердить на локальном окружении проверяющего или автора перед финальной публикацией.

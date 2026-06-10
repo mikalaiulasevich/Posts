@@ -28,7 +28,7 @@
 6. **Shared**
    - типы, константы, helpers, генерация FakerJS-изображений.
 
-## Proposed folder structure
+## Предложенная структура папок
 
 ```text
 src/

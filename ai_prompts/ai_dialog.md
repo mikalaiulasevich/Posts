@@ -369,10 +369,14 @@ Architect review: CLEAR / APPROVED
 
 ## 9. Серые квадраты вместо картинок, cacheBust и Clear cache
 
+> Актуализация перед сдачей: этот раздел является исторической частью AI-диалога.
+> Финальная реализация не содержит пользовательской feature `Clear cache`, потому что она не входит в тестовое задание.
+> One-time fetch и стабильность изображений проверяются через MMKV cache-hit/cache-miss и сохранённые FakerJS URL.
+
 ### User
 
 ```text
-Вместо картинок серые увадраты на списке и в деталях 
+Вместо картинок серые увадраты на списке и в деталях
 Так же наверое картинкам нужен добавить параметр для кеша
 Так же я хотел бы добавить кнопку в хидер для полной очистки кеша ммкв и картинок
 ```
@@ -465,10 +469,14 @@ content-type: image/jpeg
 
 ## 11. Замена RN Image на FastImage и изменение Clear cache behavior
 
+> Актуализация перед сдачей: этот раздел оставлен как часть истории AI-only итераций.
+> В финальном коде `react-native-fast-image` не используется; изображения рендерятся стандартным React Native `Image`.
+> Clear cache также не входит в финальную бизнес-логику приложения.
+
 ### User
 
 ```text
-Так же замени рн имейдж на import FastImage from 'react-native-fast-image'; 
+Так же замени рн имейдж на import FastImage from 'react-native-fast-image';
    priority: FastImage.priority.normal,
     cache: FastImage.cacheControl.immutable,
 
@@ -669,9 +677,9 @@ git diff --check
 - API: fetch через data layer.
 - Data access: Repository Pattern.
 - FakerJS enrichment выполняется один раз на cache miss.
-- Изображения рендерятся через `react-native-fast-image`.
-- FastImage cache: `immutable`, priority: `normal`.
-- Clear cache очищает MMKV + FastImage memory/disk cache и закрывает приложение.
+- Актуальная реализация рендерит изображения стандартным React Native `Image`.
+- FastImage не используется в финальном состоянии проекта; стабильность URL обеспечивается MMKV cache.
+- Clear cache не входит в финальное поведение приложения; one-time fetch проверяется через cache-hit/cache-miss логи.
 - Runtime-логи подтвердили:
   - first fetch;
   - MMKV save;

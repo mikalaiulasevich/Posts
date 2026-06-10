@@ -1,4 +1,4 @@
-# 12. Performance and code quality review
+# 12. Ревью производительности и качества кода
 
 ## Цель ревью
 
@@ -49,19 +49,19 @@
 - `d` — размер JSON payload details одного поста;
 - `s` — размер JSON payload списка в storage.
 
-| Операция | До | После | Комментарий |
-|---|---:|---:|---|
-| Загрузка списка при memory hit | `O(s + n)` через repository/cache read при повторном action | `O(1)` в store | Добавлен early return, если список уже есть в Zustand memory state. |
-| Загрузка списка при MMKV cache hit после cold start | `O(s + n)` | `O(s + n)` | Нужно прочитать JSON и validate shape; сеть/FakerJS не вызываются. |
-| Загрузка списка при cache miss | `O(n)` + network | `O(n)` + network | Fetch, validate, enrichment FakerJS и JSON serialize остаются линейными. |
-| Поднятие избранных вверх | `O(n log n + f)` | `O(n)` | `.sort()` заменён на один stable partition pass по posts с `favoriteIdsById`. |
-| Проверка `isFavorite` для item списка | `O(f)` | `O(1)` | Вместо `favoriteIds.includes(id)` используется объект-словарь. |
-| Проверка `isFavorite` на DetailsScreen | `O(f)` | `O(1)` | `selectIsFavorite` теперь читает `favoriteIdsById[id]`. |
-| Поиск details по id в store | `O(1)` | `O(1)` | `detailsById` уже normalized record. |
-| Toggle favorite | `O(f)` | `O(f)` | Проверка membership стала `O(1)`, но обновление массива для persistence и serialize остаются `O(f)`. |
-| Получение details при memory hit | `O(1)` | `O(1)` | `detailsById[id]`. |
-| Получение details при MMKV cache hit | `O(d)` | `O(d)` | Parse/validate одного объекта. |
-| Получение details при cache miss | `O(d)` + network | `O(d)` + network | Fetch одного поста, enrichment FakerJS, сохранение в MMKV. |
+| Операция                                            |                                                          До |            После | Комментарий                                                                                          |
+| --------------------------------------------------- | ----------------------------------------------------------: | ---------------: | ---------------------------------------------------------------------------------------------------- |
+| Загрузка списка при memory hit                      | `O(s + n)` через repository/cache read при повторном action |   `O(1)` в store | Добавлен early return, если список уже есть в Zustand memory state.                                  |
+| Загрузка списка при MMKV cache hit после cold start |                                                  `O(s + n)` |       `O(s + n)` | Нужно прочитать JSON и validate shape; сеть/FakerJS не вызываются.                                   |
+| Загрузка списка при cache miss                      |                                            `O(n)` + network | `O(n)` + network | Fetch, validate, enrichment FakerJS и JSON serialize остаются линейными.                             |
+| Поднятие избранных вверх                            |                                            `O(n log n + f)` |           `O(n)` | `.sort()` заменён на один stable partition pass по posts с `favoriteIdsById`.                        |
+| Проверка `isFavorite` для item списка               |                                                      `O(f)` |           `O(1)` | Вместо `favoriteIds.includes(id)` используется объект-словарь.                                       |
+| Проверка `isFavorite` на DetailsScreen              |                                                      `O(f)` |           `O(1)` | `selectIsFavorite` теперь читает `favoriteIdsById[id]`.                                              |
+| Поиск details по id в store                         |                                                      `O(1)` |           `O(1)` | `detailsById` уже normalized record.                                                                 |
+| Toggle favorite                                     |                                                      `O(f)` |           `O(f)` | Проверка membership стала `O(1)`, но обновление массива для persistence и serialize остаются `O(f)`. |
+| Получение details при memory hit                    |                                                      `O(1)` |           `O(1)` | `detailsById[id]`.                                                                                   |
+| Получение details при MMKV cache hit                |                                                      `O(d)` |           `O(d)` | Parse/validate одного объекта.                                                                       |
+| Получение details при cache miss                    |                                            `O(d)` + network | `O(d)` + network | Fetch одного поста, enrichment FakerJS, сохранение в MMKV.                                           |
 
 ## Что было улучшено
 
@@ -77,6 +77,7 @@
 7. В `loadPosts` добавлен memory-cache guard: если posts уже в Zustand state, повторный repository/MMKV flow не запускается.
 8. `useAppTheme` и `Application` мемоизируют theme object по `colorScheme`.
 9. Убран render-time diagnostic log из selector/helper сортировки; cache/API/FakerJS логи сохранены.
+10. В `httpClient` добавлен безопасный timeout через стандартный `AbortController`, чтобы зависший network request не держал UI в loading бесконечно.
 
 ## Что оставлено без изменений и почему
 

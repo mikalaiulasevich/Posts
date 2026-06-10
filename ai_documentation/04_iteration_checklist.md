@@ -1,5 +1,7 @@
 # 04. Итерационные чек-листы
 
+Документ фиксирует плановые итерации и итоговый статус реализации. Чекбоксы фаз 1–5 закрыты по текущему коду; ручные runtime-сценарии фазы 6 остаются отдельной проверкой на устройстве/симуляторе перед финальной публикацией.
+
 ## Фаза 0
 
 - [x] Прочитать `ai_prompts/task.md`.
@@ -11,46 +13,46 @@
 
 ## Фаза 1
 
-- [ ] Проверить, что React Native `>=0.77`.
-- [ ] Проверить React Navigation 7.
-- [ ] Добавить `@faker-js/faker`, если отсутствует.
-- [ ] Создать структуру `src/`.
-- [ ] Убедиться, что entrypoint импортирует существующий `Application`.
+- [x] Проверить, что React Native `>=0.77`.
+- [x] Проверить React Navigation 7.
+- [x] Добавить `@faker-js/faker`, если отсутствует.
+- [x] Создать структуру `src/`.
+- [x] Убедиться, что entrypoint импортирует существующий `Application`.
 
 ## Фаза 2
 
-- [ ] API client использует `fetch`.
-- [ ] Ошибки HTTP обрабатываются явно.
-- [ ] `PostsRepository` сначала читает MMKV.
-- [ ] `DetailsRepository` сначала читает MMKV.
-- [ ] List images 32x32 сохраняются в модели.
-- [ ] Details images 300x300 сохраняются в модели.
-- [ ] Повторный вызов repository не генерирует новые картинки.
+- [x] API client использует `fetch`.
+- [x] Ошибки HTTP обрабатываются явно.
+- [x] `PostsRepository` сначала читает MMKV.
+- [x] `DetailsRepository` сначала читает MMKV.
+- [x] List images 32x32 сохраняются в модели.
+- [x] Details images 300x300 сохраняются в модели.
+- [x] Повторный вызов repository не генерирует новые картинки.
 
 ## Фаза 3
 
-- [ ] Zustand store содержит posts/details/favorites/loading/error.
-- [ ] `loadPosts` не делает API-запрос при наличии cache.
-- [ ] `loadPostDetails(id)` не делает API-запрос при наличии cache.
-- [ ] `toggleFavorite(id)` обновляет store и MMKV.
-- [ ] Selector поднимает избранные посты вверх.
-- [ ] Store восстанавливается после перезапуска.
+- [x] Zustand store содержит posts/details/favorites/loading/error.
+- [x] `loadPosts` не делает API-запрос при наличии cache.
+- [x] `loadPostDetails(id)` не делает API-запрос при наличии cache.
+- [x] `toggleFavorite(id)` обновляет store и MMKV.
+- [x] Selector поднимает избранные посты вверх.
+- [x] Store восстанавливается после перезапуска.
 
 ## Фаза 4
 
-- [ ] Root navigator подключён к приложению.
-- [ ] Route params типизированы.
-- [ ] Нажатие на пост открывает details.
-- [ ] Header отображает понятный title.
+- [x] Root navigator подключён к приложению.
+- [x] Route params типизированы.
+- [x] Нажатие на пост открывает details.
+- [x] Header отображает понятный title.
 
 ## Фаза 5
 
-- [ ] `PostsScreen` показывает список.
-- [ ] `PostListItem` показывает 32x32 image, title/body preview, favorite state.
-- [ ] Избранный элемент визуально выделяется.
-- [ ] `DetailsScreen` показывает 300x300 image, title/body.
-- [ ] Toggle button меняет текст/состояние.
-- [ ] Loading/error/empty states реализованы.
+- [x] `PostsScreen` показывает список.
+- [x] `PostListItem` показывает 32x32 image, title/body preview, favorite state.
+- [x] Избранный элемент визуально выделяется.
+- [x] `DetailsScreen` показывает 300x300 image, title/body.
+- [x] Toggle button меняет текст/состояние.
+- [x] Loading/error/empty states реализованы.
 
 ## Фаза 6 — ручная проверка
 

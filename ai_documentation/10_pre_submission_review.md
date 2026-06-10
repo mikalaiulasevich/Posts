@@ -1,4 +1,4 @@
-# 10. Pre-submission review
+# 10. Предсдачное ревью
 
 ## Выполненные требования
 
@@ -46,16 +46,17 @@
 
 - Код ещё нужно выложить в GitHub, если репозиторий не опубликован.
 - Скриншоты и краткая выгрузка чата добавлены в репозиторий.
-- Перед публикацией AI-доказательств нужно удалить секреты, токены, приватные URL, персональные данные и лишние локальные пути.
+- Перед публикацией AI-доказательств выполнена санитизация известных локальных путей в скриншотах и grep-аудит секретов; перед публичной отправкой всё равно стоит открыть артефакты глазами.
 - Реальный Android запуск не выполнялся в этой CLI-сессии.
 - Реальный iOS Simulator запуск не выполнялся в этой CLI-сессии; вместо него проверен production bundle для iOS.
 - Сценарии из `07_testing_strategy.md` требуют ручной проверки на устройстве/симуляторе.
+- Android release signing не хранит production keystore в git; приватный keystore должен настраиваться локально/CI перед реальной публикацией.
 
 ## Команды, запущенные для проверки
 
 ```sh
 npm run setup
-npm ls react-native-fast-image eslint react react-native @faker-js/faker
+npm ls eslint react react-native @faker-js/faker
 npm run typecheck
 npm run lint -- --max-warnings=0
 npx prettier --check 'src/**/*.{ts,tsx}' package.json package-lock.json README.md 'ai_documentation/**/*.md' AGENTS.MD
@@ -63,7 +64,7 @@ npx react-native bundle --entry-file index.js --platform ios --dev false --bundl
 npx react-native bundle --entry-file index.js --platform android --dev false --bundle-output /tmp/posts-bundle-check-android/main.jsbundle --assets-dest /tmp/posts-assets-check-android
 git diff --check
 grep -RniE "fetch\\(|requestJson|createMMKV|MMKV|mmkvStorage|STORAGE_KEYS|postDetailsKey|@faker-js/faker|faker\\." src/screens src/store src/repositories src/data src/entities src/shared
-grep -RniE "react-native-fast-image|FastImage|Clear cache|CacheRepository|clearCache|size: 512" src README.md package.json package-lock.json ios/Podfile.lock ios/Pods/Manifest.lock
+grep -RniE "react-native-fast-image|FastImage|Clear cache|CacheRepository|clearCache|size: 512" src README.md package.json package-lock.json ios/Podfile.lock
 grep -RniE "RefreshControl|pull-to-refresh|offline queue|server sync" src
 grep -RniE "(API[_]KEY|SEC[R]ET|TOK[E]N|PRIVATE[ ]KEY|BEGIN[ ]RSA|ghp[_]|sk[-])" AGENTS.MD README.md ai_prompts/ai_dialog.md ai_documentation src package.json Gemfile Gemfile.lock ai_prompts/task.md ai_prompts/prompt.md
 ```

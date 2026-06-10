@@ -1,13 +1,13 @@
 import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  Animated,
-  Easing,
-  Platform,
-  StyleSheet,
-  View
-} from 'react-native';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { Animated, Easing, Platform, StyleSheet, View } from 'react-native';
 
 import type { PostListItem as PostListItemModel } from '../../entities/post/types';
 import type { RootStackParamList } from '../../navigation/types';
