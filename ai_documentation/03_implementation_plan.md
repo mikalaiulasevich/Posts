@@ -126,3 +126,22 @@
 - 8.4 Проверка persistence.
 - 8.5 Проверка edge cases.
 - 8.6 Финальная подготовка к GitHub.
+
+## Фаза 9. Native UI Polish
+
+Цель: привести приложение к строгому, красивому, платформенно-адаптированному UI без изменения business/data логики.
+
+Итерации:
+
+- 9.1 Аудит текущего UI.
+- 9.2 Создание дизайн-токенов.
+- 9.3 Улучшение `PostsScreen`.
+- 9.4 Улучшение `PostListItem`.
+- 9.5 Улучшение `DetailsScreen`.
+- 9.6 Улучшение favorite-состояния.
+- 9.7 Улучшение loading/error/empty states.
+- 9.8 Платформенная адаптация iOS/Android.
+- 9.9 Accessibility-проверка.
+- 9.10 Финальное UI-ревью.
+
+Критерий завершения: UI использует theme/tokens, выглядит аккуратно на iOS/Android, сохраняет one-time fetch/cache behavior и проходит typecheck/lint/bundle checks.

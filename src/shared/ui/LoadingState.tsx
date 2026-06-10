@@ -1,6 +1,9 @@
 import React from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
+import { spacing, typography } from './theme/tokens';
+import { useAppTheme } from './theme/useAppTheme';
+
 type LoadingStateProps = {
   label?: string;
 };
@@ -8,10 +11,28 @@ type LoadingStateProps = {
 export function LoadingState({
   label = 'Loading...',
 }: LoadingStateProps): React.JSX.Element {
+  const theme = useAppTheme();
+
   return (
-    <View style={styles.container}>
-      <ActivityIndicator color="#2563EB" size="large" />
-      <Text style={styles.label}>{label}</Text>
+    <View
+      accessibilityRole="progressbar"
+      accessibilityLabel={label}
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+    >
+      <View
+        style={[
+          styles.card,
+          {
+            backgroundColor: theme.colors.surface,
+            borderColor: theme.colors.border,
+          },
+        ]}
+      >
+        <ActivityIndicator color={theme.colors.accent} size="large" />
+        <Text style={[styles.label, { color: theme.colors.textSecondary }]}>
+          {label}
+        </Text>
+      </View>
     </View>
   );
 }
@@ -20,12 +41,20 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     flex: 1,
-    gap: 12,
     justifyContent: 'center',
-    padding: 24,
+    padding: spacing.xxl,
+  },
+  card: {
+    alignItems: 'center',
+    borderRadius: 20,
+    borderWidth: StyleSheet.hairlineWidth,
+    gap: spacing.md,
+    minWidth: 180,
+    paddingHorizontal: spacing.xxl,
+    paddingVertical: spacing.xxl,
   },
   label: {
-    color: '#475569',
-    fontSize: 15,
+    ...typography.caption,
+    textAlign: 'center',
   },
 });

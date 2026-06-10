@@ -139,6 +139,7 @@ npx react-native bundle \
 - `ai_documentation/05_ai_prompts.md`
 - `ai_documentation/06_decisions.md`
 - `ai_documentation/09_final_acceptance_checklist.md`
+- `ai_documentation/11_ui_native_polish_plan.md`
 - `ai_prompts/prompt.md`
 - `ai_prompts/task.md`
 - `ai_prompts/ai_dialog.md`

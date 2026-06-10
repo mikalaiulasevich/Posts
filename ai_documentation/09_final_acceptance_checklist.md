@@ -28,6 +28,26 @@
 - [x] Selectors отвечают за derived order.
 - [x] FakerJS enrichment изолирован в factory/helper.
 
+## UI Native Polish
+
+- [x] `ai_documentation/11_ui_native_polish_plan.md` создан.
+- [x] PostsScreen имеет нативный UI-polish для iOS на уровне кода и bundle-проверки.
+- [x] PostsScreen имеет нативный UI-polish для Android на уровне кода и bundle-проверки.
+- [x] DetailsScreen имеет нативный UI-polish для iOS на уровне кода и bundle-проверки.
+- [x] DetailsScreen имеет нативный UI-polish для Android на уровне кода и bundle-проверки.
+- [ ] Runtime visual-check на реальных/simulator iOS и Android приложить перед финальной сдачей.
+- [x] Избранные посты визуально понятны.
+- [x] Кнопка избранного понятна в обоих состояниях.
+- [x] Список хорошо читается.
+- [x] Текст не обрезается критично.
+- [x] Есть loading state.
+- [x] Есть error state.
+- [x] Есть empty state.
+- [x] Есть корректные отступы от Safe Area.
+- [x] Есть доступные labels для интерактивных элементов.
+- [x] Press states ощущаются нативно.
+- [x] UI не ломает бизнес-логику.
+
 ## README/GitHub
 
 - [ ] Код выложен в GitHub.

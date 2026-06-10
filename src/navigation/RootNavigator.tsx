@@ -3,25 +3,33 @@ import React from 'react';
 
 import { DetailsScreen } from '../screens/details/DetailsScreen';
 import { PostsScreen } from '../screens/posts/PostsScreen';
+import { typography, type AppTheme } from '../shared/ui/theme/tokens';
 
 import type { RootStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-export function RootNavigator(): React.JSX.Element {
+type RootNavigatorProps = {
+  theme: AppTheme;
+};
+
+export function RootNavigator({
+  theme,
+}: RootNavigatorProps): React.JSX.Element {
   return (
     <Stack.Navigator
       screenOptions={{
         contentStyle: {
-          backgroundColor: '#F8FAFC',
+          backgroundColor: theme.colors.background,
         },
-        headerShadowVisible: false,
+        headerShadowVisible: !theme.isDark,
         headerStyle: {
-          backgroundColor: '#FFFFFF',
+          backgroundColor: theme.colors.surface,
         },
-        headerTintColor: '#111827',
+        headerTintColor: theme.colors.textPrimary,
         headerTitleStyle: {
-          fontWeight: '700',
+          fontSize: typography.subtitle.fontSize,
+          fontWeight: typography.subtitle.fontWeight,
         },
       }}
     >
