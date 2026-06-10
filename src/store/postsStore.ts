@@ -27,6 +27,7 @@ export type PostsState = {
   posts: PostListItem[];
   detailsById: Record<number, PostDetails>;
   favoriteIds: number[];
+  favoriteIdsById: FavoriteIdsById;
   isPostsLoading: boolean;
   detailsLoadingById: Record<number, boolean>;
   postsError: string | null;
@@ -35,6 +36,8 @@ export type PostsState = {
   loadPostDetails: (id: number) => Promise<void>;
   toggleFavorite: (id: number) => void;
 };
+
+export type FavoriteIdsById = Partial<Record<number, true>>;
 
 export function createPostsStore(dependencies: PostsStoreDependencies = {}) {
   const postsRepo = dependencies.postsRepository ?? postsRepository;
@@ -48,12 +51,22 @@ export function createPostsStore(dependencies: PostsStoreDependencies = {}) {
     posts: [],
     detailsById: {},
     favoriteIds: initialFavoriteIds,
+    favoriteIdsById: createFavoriteIdsById(initialFavoriteIds),
     isPostsLoading: false,
     detailsLoadingById: {},
     postsError: null,
     detailsErrorById: {},
 
     async loadPosts(): Promise<void> {
+      const cachedPosts = get().posts;
+
+      if (cachedPosts.length > 0) {
+        logger.info('loadPosts:memory-cache-hit', {
+          count: cachedPosts.length,
+        });
+        return;
+      }
+
       logger.info('loadPosts:start');
       set({ isPostsLoading: true, postsError: null });
 
@@ -131,13 +144,17 @@ export function createPostsStore(dependencies: PostsStoreDependencies = {}) {
       assertPostId(id);
 
       const currentFavoriteIds = get().favoriteIds;
-      const isFavorite = currentFavoriteIds.includes(id);
+      const currentFavoriteIdsById = get().favoriteIdsById;
+      const isFavorite = currentFavoriteIdsById[id] === true;
       const favoriteIds = isFavorite
         ? currentFavoriteIds.filter(favoriteId => favoriteId !== id)
         : [...currentFavoriteIds, id];
+      const favoriteIdsById = isFavorite
+        ? removeFavoriteId(currentFavoriteIdsById, id)
+        : { ...currentFavoriteIdsById, [id]: true as const };
 
       favoritesRepo.setFavoriteIds(favoriteIds);
-      set({ favoriteIds });
+      set({ favoriteIds, favoriteIdsById });
 
       logger.info('toggleFavorite:success', {
         favoriteCount: favoriteIds.length,
@@ -146,6 +163,24 @@ export function createPostsStore(dependencies: PostsStoreDependencies = {}) {
       });
     },
   }));
+}
+
+function createFavoriteIdsById(favoriteIds: number[]): FavoriteIdsById {
+  return favoriteIds.reduce<FavoriteIdsById>((lookup, id) => {
+    lookup[id] = true;
+    return lookup;
+  }, {});
+}
+
+function removeFavoriteId(
+  favoriteIdsById: FavoriteIdsById,
+  id: number,
+): FavoriteIdsById {
+  const nextFavoriteIdsById = { ...favoriteIdsById };
+
+  delete nextFavoriteIdsById[id];
+
+  return nextFavoriteIdsById;
 }
 
 function assertPostId(id: number): void {

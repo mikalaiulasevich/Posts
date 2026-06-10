@@ -1,18 +1,19 @@
+import React, { useMemo } from 'react';
+import { StatusBar, useColorScheme } from 'react-native';
 import {
   DarkTheme,
   DefaultTheme,
   NavigationContainer,
   type Theme as NavigationTheme,
 } from '@react-navigation/native';
-import React, { useMemo } from 'react';
-import { StatusBar, useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { RootNavigator } from '../navigation/RootNavigator';
 import { getAppTheme } from '../shared/ui/theme/tokens';
 
 function Application(): React.JSX.Element {
-  const theme = getAppTheme(useColorScheme());
+  const colorScheme = useColorScheme();
+  const theme = useMemo(() => getAppTheme(colorScheme), [colorScheme]);
   const navigationTheme = useMemo<NavigationTheme>(() => {
     const baseTheme = theme.isDark ? DarkTheme : DefaultTheme;
 

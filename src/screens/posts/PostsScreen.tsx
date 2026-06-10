@@ -1,23 +1,24 @@
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, Platform, StyleSheet, View } from 'react-native';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-import type { PostListItem as PostListItemModel } from '../../entities/post/types';
 import type { RootStackParamList } from '../../navigation/types';
-import { createLogger } from '../../shared/lib/logger';
-import { EmptyState } from '../../shared/ui/EmptyState';
-import { ErrorState } from '../../shared/ui/ErrorState';
-import { LoadingState } from '../../shared/ui/LoadingState';
-import { UiScreen } from '../../shared/ui/primitives';
-import { spacing } from '../../shared/ui/theme/tokens';
 import {
-  selectFavoriteIds,
+  isFavoritePost,
+  selectFavoriteIdsById,
   selectIsPostsLoading,
   selectPosts,
   selectPostsError,
   sortPostsWithFavorites,
 } from '../../store/selectors';
 import { usePostsStore } from '../../store/postsStore';
+import type { PostListItem as PostListItemModel } from '../../entities/post/types';
+import { createLogger } from '../../shared/lib/logger';
+import { EmptyState } from '../../shared/ui/EmptyState';
+import { ErrorState } from '../../shared/ui/ErrorState';
+import { LoadingState } from '../../shared/ui/LoadingState';
+import { UiScreen } from '../../shared/ui/primitives';
+import { spacing } from '../../shared/ui/theme/tokens';
 
 import { PostListItem } from './components/PostListItem';
 
@@ -25,18 +26,20 @@ const logger = createLogger('PostsScreen');
 
 type PostsScreenProps = NativeStackScreenProps<RootStackParamList, 'Posts'>;
 
+const keyExtractor = (item: PostListItemModel): string => String(item.id);
+
 export function PostsScreen({
   navigation,
 }: PostsScreenProps): React.JSX.Element {
   const posts = usePostsStore(selectPosts);
-  const favoriteIds = usePostsStore(selectFavoriteIds);
+  const favoriteIdsById = usePostsStore(selectFavoriteIdsById);
   const isLoading = usePostsStore(selectIsPostsLoading);
   const error = usePostsStore(selectPostsError);
   const loadPosts = usePostsStore(state => state.loadPosts);
   const [hasRequestedPosts, setHasRequestedPosts] = useState(false);
   const sortedPosts = useMemo(
-    () => sortPostsWithFavorites(posts, favoriteIds),
-    [favoriteIds, posts],
+    () => sortPostsWithFavorites(posts, favoriteIdsById),
+    [favoriteIdsById, posts],
   );
 
   const requestPosts = useCallback(() => {
@@ -61,11 +64,11 @@ export function PostsScreen({
     ({ item }: { item: PostListItemModel }) => (
       <PostListItem
         post={item}
-        isFavorite={favoriteIds.includes(item.id)}
+        isFavorite={isFavoritePost(favoriteIdsById, item.id)}
         onPress={handlePostPress}
       />
     ),
-    [favoriteIds, handlePostPress],
+    [favoriteIdsById, handlePostPress],
   );
 
   if (isLoading && posts.length === 0) {
@@ -91,7 +94,7 @@ export function PostsScreen({
         contentContainerStyle={styles.content}
         data={sortedPosts}
         initialNumToRender={12}
-        keyExtractor={item => String(item.id)}
+        keyExtractor={keyExtractor}
         renderItem={renderItem}
         ItemSeparatorComponent={Separator}
         ListFooterComponent={Footer}
